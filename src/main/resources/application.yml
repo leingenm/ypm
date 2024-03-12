@@ -1,6 +1,18 @@
 spring:
-    application:
-        name: youtube-playlist-manager
 
+  # Secret data
+  config:
+    import: classpath:application.secrets.yml
+
+  # Spring specific
+  application:
+    name: youtube-playlist-manager
+
+# Custom
 youtube:
-    api-key: AIzaSyD11XKpIHtN-wbYXlYkbHpsR9x-y5kplDk
+  application:
+    name: ${google.application.name}
+  api:
+    key: ${google.api.key}
+  channel:
+    id: ${google.channel.id}
