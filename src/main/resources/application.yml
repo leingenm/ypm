@@ -1,0 +1,6 @@
+spring:
+    application:
+        name: youtube-playlist-manager
+
+youtube:
+    api-key: AIzaSyD11XKpIHtN-wbYXlYkbHpsR9x-y5kplDk
