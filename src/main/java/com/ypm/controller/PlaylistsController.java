@@ -13,25 +13,25 @@ import java.util.List;
 
 @RestController
 public class PlaylistsController {
-  private final YouTube youTubeClient;
+    private final YouTube youTubeClient;
 
-  // TODO: Move out from here. Added just for demo.
-  @Value("${youtube.api.key}")
-  private String apiKey;
+    // TODO: Move out from here. Added just for demo.
+    @Value("${youtube.api.key}")
+    private String apiKey;
 
-  @Value("${youtube.channel.id}")
-  private String channelId;
+    @Value("${youtube.channel.id}")
+    private String channelId;
 
-  @Autowired
-  public PlaylistsController(@Qualifier("getYouTubeClient") YouTube youTubeClient) {
-    this.youTubeClient = youTubeClient;
-  }
+    @Autowired
+    public PlaylistsController(@Qualifier("getYouTubeClient") YouTube youTubeClient) {
+        this.youTubeClient = youTubeClient;
+    }
 
-  @GetMapping("/")
-  public ResponseEntity<String> get() throws IOException {
-    var request = youTubeClient.channels().list(List.of("contentDetails", "snippet"));
-    var response = request.setId(List.of(channelId)).setKey(apiKey).execute();
+    @GetMapping("/")
+    public ResponseEntity<String> get() throws IOException {
+        var request = youTubeClient.channels().list(List.of("contentDetails", "snippet"));
+        var response = request.setId(List.of(channelId)).setKey(apiKey).execute();
 
-    return ResponseEntity.ok(response.toString());
-  }
+        return ResponseEntity.ok(response.toString());
+    }
 }

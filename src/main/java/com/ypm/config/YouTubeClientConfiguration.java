@@ -15,16 +15,16 @@ import java.security.GeneralSecurityException;
 @Configuration
 public class YouTubeClientConfiguration {
 
-  @Value("${youtube.application.name}")
-  private String applicationName;
+    @Value("${youtube.application.name}")
+    private String applicationName;
 
-  @Bean
-  public YouTube getYouTubeClient() throws GeneralSecurityException, IOException {
-    HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-    JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+    @Bean
+    public YouTube getYouTubeClient() throws GeneralSecurityException, IOException {
+        HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
-    return new YouTube.Builder(httpTransport, jsonFactory, null)
-      .setApplicationName(applicationName)
-      .build();
-  }
+        return new YouTube.Builder(httpTransport, jsonFactory, null)
+            .setApplicationName(applicationName)
+            .build();
+    }
 }
