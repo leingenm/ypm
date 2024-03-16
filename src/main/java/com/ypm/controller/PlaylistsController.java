@@ -1,37 +1,35 @@
 package com.ypm.controller;
 
-import com.google.api.services.youtube.YouTube;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import com.google.api.services.youtube.model.VideoSnippet;
+import com.ypm.model.dto.PlayList;
+import com.ypm.service.YouTubeService;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/playlist")
+@RequiredArgsConstructor
 public class PlaylistsController {
-    private final YouTube youTubeClient;
 
-    // TODO: Move out from here. Added just for demo.
-    @Value("${youtube.api.key}")
-    private String apiKey;
+    private final YouTubeService youTubeService;
 
-    @Value("${youtube.channel.id}")
-    private String channelId;
+    @SneakyThrows
+    @GetMapping("/list")
+    public ResponseEntity<List<PlayList>> getPlayLists(@RequestParam String channelId) {
+        var results = youTubeService.getPlaylists(channelId);
 
-    @Autowired
-    public PlaylistsController(@Qualifier("getYouTubeClient") YouTube youTubeClient) {
-        this.youTubeClient = youTubeClient;
+        return ResponseEntity.ok(results);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<String> get() throws IOException {
-        var request = youTubeClient.channels().list(List.of("contentDetails", "snippet"));
-        var response = request.setId(List.of(channelId)).setKey(apiKey).execute();
+    @GetMapping("/list/{playlistId}/videos")
+    public ResponseEntity<List<VideoSnippet>> getVideos(@PathVariable String playlistId) throws IOException {
+        var playListVideos = youTubeService.getPlayListVideos(playlistId);
 
-        return ResponseEntity.ok(response.toString());
+        return ResponseEntity.ok(playListVideos);
     }
 }
