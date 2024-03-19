@@ -12,6 +12,7 @@ import com.google.api.services.youtube.YouTube;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,14 +22,16 @@ import java.util.Collection;
 import java.util.List;
 
 @Configuration
+@Lazy
 public class YouTubeClientConfiguration {
     private static final Collection<String> SCOPES =
-            List.of("https://www.googleapis.com/auth/youtube.readonly");
+        List.of("https://www.googleapis.com/auth/youtube.readonly");
 
     @Value("${youtube.application.name}")
     private String applicationName;
 
     @Bean
+    @Lazy
     public YouTube getYouTubeClient() throws GeneralSecurityException, IOException {
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         GsonFactory jsonFactory = GsonFactory.getDefaultInstance();

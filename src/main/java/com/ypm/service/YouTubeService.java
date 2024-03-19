@@ -4,6 +4,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.ypm.model.dto.PlayList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Lazy
 public class YouTubeService {
 
     private final YouTube youTubeClient;
