@@ -1,12 +1,22 @@
 spring:
-
   # Secret data
   config:
     import: classpath:application.secrets.yml
-
   # Spring specific
   application:
     name: youtube-playlist-manager
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id:
+            client-secret:
+            scope: profile, email, https://www.googleapis.com/auth/youtube.readonly
+
+logging:
+  level:
+    org.springframework.security: trace
 
 # Custom
 youtube:
