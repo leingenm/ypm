@@ -1,26 +1,34 @@
 package com.ypm.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestController
+@Controller
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
+    @GetMapping("/success")
+    public ModelAndView success() {
+        ModelAndView modelAndView = new ModelAndView("auth");
+        modelAndView.addObject("type", "success");
+        modelAndView.addObject("title", "Login Successful");
+        modelAndView.addObject("message",
+            "Welcome back! You have successfully logged in.");
 
-    @GetMapping
-    public void login() {
-        System.out.println("Hello from AuthController");
+        return modelAndView;
     }
 
-    @GetMapping("/google")
-    public ResponseEntity<?> googleAuth(@RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient authorizedClient) {
-        var token = authorizedClient.getAccessToken();
-        var refresh = authorizedClient.getRefreshToken();
+    @GetMapping("/error")
+    public ModelAndView error() {
+        ModelAndView modelAndView = new ModelAndView("auth");
+        modelAndView.addObject("type", "error");
+        modelAndView.addObject("title", "Login Error");
+        modelAndView.addObject("message",
+            "Sorry, there was an error with your login credentials. Please try again.");
 
-        return ResponseEntity.ok(token);
+        return modelAndView;
     }
 }
