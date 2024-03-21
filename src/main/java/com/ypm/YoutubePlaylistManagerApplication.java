@@ -9,5 +9,4 @@ public class YoutubePlaylistManagerApplication {
     public static void main(String[] args) {
         SpringApplication.run(YoutubePlaylistManagerApplication.class, args);
     }
-
 }

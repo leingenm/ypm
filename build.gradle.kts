@@ -24,24 +24,16 @@ repositories {
 dependencies {
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    // Spring Boot - Development
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    // developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
-    // Database
-    runtimeOnly("com.h2database:h2")
-    runtimeOnly("com.mysql:mysql-connector-j")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // YouTube Client
     implementation("com.google.apis:google-api-services-youtube:v3-rev20240310-2.0.0")
     implementation("com.google.api-client:google-api-client:2.4.0")
-    // implementation("com.google.api-client:google-api-client-jackson2:1.28.1")
     implementation("com.google.http-client:google-http-client:1.44.1")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.35.0")
     implementation("com.google.code.gson:gson:2.10.1")
