@@ -1,30 +1,27 @@
-package com.ypm.config;
+package com.ypm.config.youtube;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 @Configuration
+@Lazy
 public class YouTubeClientConfiguration {
-
-    @Value("${youtube.application.name}")
-    private String applicationName;
 
     @Bean
     public YouTube getYouTubeClient() throws GeneralSecurityException, IOException {
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+        GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
         return new YouTube.Builder(httpTransport, jsonFactory, null)
-            .setApplicationName(applicationName)
+            .setApplicationName("YouTube Playlists Helper")
             .build();
     }
 }
