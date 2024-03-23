@@ -27,15 +27,14 @@ jobs:
       - name: Update application.yml
         uses: fjogeleit/yaml-update-action@main
         with:
+          valueFile: src/main/resources/application.yml
           commitChange: false
           createPR: false
           changes: |
             {
-              "./src/main/resources/application.yml": {
-                "spring.config.import": "classpath:application.yml",
-                "spring.security.oauth2.client.registration.google:client-id": "dummy",
-                "spring.security.oauth2.client.registration.google:client-secret": "dummy"
-              }
+              "spring.config.import": "classpath:application.yml",
+              "spring.security.oauth2.client.registration.google[client-id]": "dummy",
+              "spring.security.oauth2.client.registration.google[client-secret]": "dummy"
             }
 
       - name: Build with Gradle Wrapper
