@@ -24,20 +24,32 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
 
-      - name: Update application.yml
+      - name: Update application.yml spring.config.import
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: ./src/main/resources/application.yml
+          propertyPath: 'spring.config.import'
+          value: 'classpath:application.yml'
           commitChange: false
           createPR: false
-          changes: |
-            {
-              "./src/main/resources/application.yml": {
-                "spring.config.import": "classpath:application.yml",
-                "'spring.security.oauth2.client.registration.google["client-id"]'": "dummy",
-                "'spring.security.oauth2.client.registration.google["client-secret"]'": "dummy"
-              }
-            }
+
+      - name: Update application.yml google.client-id
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: ./src/main/resources/application.yml
+          propertyPath: 'spring.security.oauth2.client.registration.google["client-id"]'
+          value: 'dummy'
+          commitChange: false
+          createPR: false
+
+      - name: Update application.yml google.client-secret
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: ./src/main/resources/application.yml
+          propertyPath: 'spring.security.oauth2.client.registration.google["client-secret"]'
+          value: 'dummy'
+          commitChange: false
+          createPR: false
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
