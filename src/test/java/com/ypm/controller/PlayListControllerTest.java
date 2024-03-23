@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PlayListControllerTest {
 
     @Autowired
-    ClientRegistrationRepository clientRegistrationRepository;
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     @Autowired
     private MockMvc mockMvc;
