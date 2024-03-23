@@ -31,7 +31,7 @@ jobs:
           createPR: false
           changes: |
             {
-              "/src/main/resources/application.yml": {
+              "./src/main/resources/application.yml": {
                 "spring.config.import": "classpath:application.yml",
                 "spring.security.oauth2.client.registration.google.client-id": "dummy",
                 "spring.security.oauth2.client.registration.google.client-secret": "dummy"
