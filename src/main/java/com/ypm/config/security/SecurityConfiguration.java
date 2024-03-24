@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class SecurityConfiguration {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
             .oauth2Login(config -> {

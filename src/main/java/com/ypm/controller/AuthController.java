@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
     @GetMapping("/success")
     public ModelAndView success() {
         ModelAndView modelAndView = new ModelAndView("auth");
