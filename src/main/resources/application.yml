@@ -6,7 +6,7 @@ spring:
 
   # Spring
   application:
-    name: youtube-playlist-manager
+    name: ypm
   security:
     oauth2:
       client:
