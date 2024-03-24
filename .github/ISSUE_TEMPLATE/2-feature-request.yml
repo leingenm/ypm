@@ -1,0 +1,48 @@
+name: Feature Request
+description: Request a new feature or enhancement
+title: "[Feature Request]: "
+labels: ["enhancement"]
+assignees:
+  - daverbk
+  - RomanMager
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to submit a feature request!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: Please describe the feature or enhancement you'd like to see added.
+      placeholder: Describe the feature here...
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low
+        - Medium
+        - High
+      default: 1
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/RomanMager/ypm/blob/main/.github/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
