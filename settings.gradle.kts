@@ -1,1 +1,1 @@
-rootProject.name = "youtube-playlist-manager"
+rootProject.name = "ypm"
