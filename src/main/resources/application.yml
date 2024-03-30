@@ -15,7 +15,7 @@ spring:
             client-name: Google
             client-id: ${google.application.client-id}
             client-secret: ${google.application.client-secret}
-            scope: profile, email, https://www.googleapis.com/auth/youtube.readonly
+            scope: profile, email, https://www.googleapis.com/auth/youtube
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/google
         provider:

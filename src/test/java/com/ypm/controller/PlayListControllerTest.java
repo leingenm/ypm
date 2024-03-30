@@ -3,7 +3,8 @@ package com.ypm.controller;
 import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 import com.google.api.services.youtube.model.VideoSnippet;
-import com.ypm.service.YouTubeService;
+import com.ypm.service.PlayListService;
+import com.ypm.service.VideosService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,38 +34,41 @@ class PlayListControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private YouTubeService youTubeService;
+    private PlayListService playListService;
+
+    @MockBean
+    private VideosService videosService;
 
     @Test
     void givenCorrectRequest_whenGetPlayLists_thenResponseContainsPlayListName() throws Exception {
         Playlist playlist = new Playlist();
         playlist.setSnippet(new PlaylistSnippet().setTitle("Test Playlist"));
         List<Playlist> playlists = Collections.singletonList(playlist);
-        when(youTubeService.getMyPlayLists(any())).thenReturn(playlists);
+        when(playListService.getMyPlayLists(any())).thenReturn(playlists);
 
-        mockMvc.perform(get("/playlist/list")
+        mockMvc.perform(get("/playlists")
                 .with(oauth2Login()
                     .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$[0].snippet.title").value("Test Playlist"));
 
-        verify(youTubeService, times(1)).getMyPlayLists(any());
+        verify(playListService, times(1)).getMyPlayLists(any());
     }
 
     @Test
-    void givenCorrectRequest_whenGetVideos_thenResponseContainsVideoTitle() throws Exception {
+    void givenCorrectRequest_whenGetPlayListVideos_thenResponseContainsVideoTitle() throws Exception {
         VideoSnippet video = new VideoSnippet().setTitle("Test Video");
         List<VideoSnippet> videos = Collections.singletonList(video);
-        when(youTubeService.getPlayListVideos(any(), any())).thenReturn(videos);
+        when(videosService.getPlayListVideos(any(), any())).thenReturn(videos);
 
-        mockMvc.perform(get("/playlist/{playlistId}/videos", "playlist_id")
+        mockMvc.perform(get("/playlists/{playlistId}", "playlistId")
                 .with(oauth2Login()
                     .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$[0].title").value("Test Video"));
 
-        verify(youTubeService, times(1)).getPlayListVideos(any(), any());
+        verify(videosService, times(1)).getPlayListVideos(any(), any());
     }
 }
