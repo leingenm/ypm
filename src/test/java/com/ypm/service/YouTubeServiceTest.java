@@ -26,7 +26,7 @@ class YouTubeServiceTest {
     private PlayListService playListService;
 
     @InjectMocks
-    private VideosService videosService;
+    private VideoService videosService;
 
     @Test
     void givenCorrectData_whenGetPlayLists_thenPlaylistsFound() throws IOException {
@@ -43,7 +43,7 @@ class YouTubeServiceTest {
         when(playlistsList.setMine(true)).thenReturn(playlistsList);
         when(playlistsList.execute()).thenReturn(playlistsListResponse);
 
-        List<Playlist> result = playListService.getMyPlayLists(accessToken);
+        List<Playlist> result = playListService.getPlayLists(accessToken);
 
         assertEquals(1, result.size());
         assertEquals(expectedPlaylist, result.get(0));
@@ -68,9 +68,9 @@ class YouTubeServiceTest {
         when(playlistItemsList.setPlaylistId(playlistId)).thenReturn(playlistItemsList);
         when(playlistItemsList.execute()).thenReturn(playlistItemsListResponse);
 
-        List<VideoSnippet> result = videosService.getPlayListVideos(accessToken, playlistId);
+        List<PlaylistItem> result = videosService.getPlayListVideos(accessToken, playlistId);
 
         assertEquals(1, result.size());
-        assertEquals("Video Title", result.get(0).getTitle());
+        assertEquals("Video Title", result.get(0).getSnippet().getTitle());
     }
 }

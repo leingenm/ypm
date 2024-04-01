@@ -1,10 +1,10 @@
 package com.ypm.controller;
 
 import com.google.api.services.youtube.model.Playlist;
+import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
-import com.google.api.services.youtube.model.VideoSnippet;
 import com.ypm.service.PlayListService;
-import com.ypm.service.VideosService;
+import com.ypm.service.VideoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -37,14 +37,14 @@ class PlayListControllerTest {
     private PlayListService playListService;
 
     @MockBean
-    private VideosService videosService;
+    private VideoService videosService;
 
     @Test
     void givenCorrectRequest_whenGetPlayLists_thenResponseContainsPlayListName() throws Exception {
         Playlist playlist = new Playlist();
         playlist.setSnippet(new PlaylistSnippet().setTitle("Test Playlist"));
         List<Playlist> playlists = Collections.singletonList(playlist);
-        when(playListService.getMyPlayLists(any())).thenReturn(playlists);
+        when(playListService.getPlayLists(any())).thenReturn(playlists);
 
         mockMvc.perform(get("/playlists")
                 .with(oauth2Login()
@@ -53,13 +53,14 @@ class PlayListControllerTest {
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$[0].snippet.title").value("Test Playlist"));
 
-        verify(playListService, times(1)).getMyPlayLists(any());
+        verify(playListService, times(1)).getPlayLists(any());
     }
 
     @Test
     void givenCorrectRequest_whenGetPlayListVideos_thenResponseContainsVideoTitle() throws Exception {
-        VideoSnippet video = new VideoSnippet().setTitle("Test Video");
-        List<VideoSnippet> videos = Collections.singletonList(video);
+        PlaylistItem video = new PlaylistItem();
+        video.getSnippet().setTitle("Video Title");
+        List<PlaylistItem> videos = List.of(video);
         when(videosService.getPlayListVideos(any(), any())).thenReturn(videos);
 
         mockMvc.perform(get("/playlists/{playlistId}", "playlistId")
