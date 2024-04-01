@@ -43,7 +43,6 @@ public class PlayListService {
             .list(List.of("snippet"))
             .setId(List.of(playListId))
             .setAccessToken(accessToken)
-            .setMine(true)
             .execute()
             .getItems()
             .stream()
