@@ -24,8 +24,8 @@ public class PlayListService {
             .getItems();
     }
 
-    public Playlist updatePlayListName(String accessToken, String playListId, String newTitle)
-        throws IOException {
+    public Playlist updatePlayListTitle(String accessToken, String playListId,
+                                        String newTitle) throws IOException {
 
         Playlist playlistToEdit = getPlayListById(accessToken, playListId);
         playlistToEdit.getSnippet().setTitle(newTitle);

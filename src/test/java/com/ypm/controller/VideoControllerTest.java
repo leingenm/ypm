@@ -17,7 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class VideoControllerTest {
+class VideoControllerTest {
+
     @MockBean
     private VideoService videosService;
 
@@ -34,7 +35,7 @@ public class VideoControllerTest {
 
         doNothing().when(videosService).deleteVideo(any(), any());
 
-        mockMvc.perform(delete("/videos/{videoId}", "videoId").with(login))
+        mockMvc.perform(delete("/videos/{videoId}", "someId").with(login))
             .andExpect(status().isNoContent());
     }
 }
