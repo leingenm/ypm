@@ -62,8 +62,8 @@ public class VideoService {
             .execute();
     }
 
-    public List<PlaylistItem> getPlayListVideos(String accessToken, String playListId)
-        throws IOException {
+    public List<PlaylistItem> getPlayListVideos(String accessToken,
+                                                String playListId) throws IOException {
 
         return youTubeClient
             .playlistItems()

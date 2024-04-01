@@ -13,7 +13,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthControllerTest {
+class AuthControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -24,7 +25,7 @@ public class AuthControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.view().name("auth"))
             .andExpect(MockMvcResultMatchers.model().attribute("type", "success"))
-            .andExpect(MockMvcResultMatchers.model().attribute("title", "Login Successful"))
+            .andExpect(MockMvcResultMatchers.model().attribute("title", "Login Success"))
             .andExpect(MockMvcResultMatchers.model().attribute("message",
                 "Welcome back! You have successfully logged in."));
     }
@@ -38,7 +39,6 @@ public class AuthControllerTest {
             .andExpect(MockMvcResultMatchers.model().attribute("type", "error"))
             .andExpect(MockMvcResultMatchers.model().attribute("title", "Login Error"))
             .andExpect(MockMvcResultMatchers.model().attribute("message",
-                "Sorry, there was an error with your login credentials. Please try again."));
+                "An error occurred while logging in. Please try again."));
     }
-
 }

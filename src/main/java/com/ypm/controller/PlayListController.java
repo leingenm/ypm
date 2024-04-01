@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/playlists")
 @RequiredArgsConstructor
 public class PlayListController {
+
     private final PlayListService playListService;
     private final VideoService videosService;
 
@@ -44,8 +45,8 @@ public class PlayListController {
         return ResponseEntity.ok(videosService.getPlayListVideos(accessToken, playlistId));
     }
 
-    @PutMapping("/{playlistId}/updateTitle")
-    public ResponseEntity<Playlist> updatePlayListName(
+    @PutMapping("/{playlistId}")
+    public ResponseEntity<Playlist> updatePlayListTitle(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authentication,
         @PathVariable String playlistId,
         @RequestBody PlaylistSnippet dataWithUpdatedTitle) throws IOException {
@@ -55,7 +56,7 @@ public class PlayListController {
             .getTokenValue();
 
         String newTitle = dataWithUpdatedTitle.getTitle();
-        return ResponseEntity.ok(playListService.updatePlayListName(accessToken, playlistId, newTitle));
+        return ResponseEntity.ok(playListService.updatePlayListTitle(accessToken, playlistId, newTitle));
     }
 
     @PutMapping("/{playlistId}/{targetPlaylistId}")

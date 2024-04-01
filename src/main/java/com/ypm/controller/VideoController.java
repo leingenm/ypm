@@ -13,6 +13,7 @@ import java.io.IOException;
 @RequestMapping("/videos")
 @RequiredArgsConstructor
 public class VideoController {
+
     private final VideoService videosService;
 
     @DeleteMapping("/{videoId}")
