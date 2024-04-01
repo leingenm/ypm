@@ -14,14 +14,14 @@ public class PlayListService {
 
     private final YouTube youTubeClient;
 
-    public List<Playlist> getMyPlayLists(String accessToken) throws IOException {
-        var request = youTubeClient.playlists().list(List.of("snippet"));
-        var response = request
+    public List<Playlist> getPlayLists(String accessToken) throws IOException {
+        return youTubeClient
+            .playlists()
+            .list(List.of("snippet"))
             .setAccessToken(accessToken)
             .setMine(true)
-            .execute();
-
-        return response.getItems();
+            .execute()
+            .getItems();
     }
 
     public Playlist updatePlayListName(String accessToken, String playListId, String newTitle)
@@ -29,23 +29,25 @@ public class PlayListService {
 
         Playlist playlistToEdit = getPlayListById(accessToken, playListId);
         playlistToEdit.getSnippet().setTitle(newTitle);
-        var request = youTubeClient.playlists().update(List.of("snippet"), playlistToEdit);
-        return request.setAccessToken(accessToken).execute();
+
+        return youTubeClient
+            .playlists()
+            .update(List.of("snippet"), playlistToEdit)
+            .setAccessToken(accessToken)
+            .execute();
     }
 
-
     public Playlist getPlayListById(String accessToken, String playListId) throws IOException {
-        var request = youTubeClient.playlists().list(List.of("snippet"));
-        var response = request
+        return youTubeClient
+            .playlists()
+            .list(List.of("snippet"))
+            .setId(List.of(playListId))
             .setAccessToken(accessToken)
             .setMine(true)
-            .execute();
-
-        return response
+            .execute()
             .getItems()
             .stream()
-            .filter(playlist -> playlist.getId().equals(playListId))
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Playlist not found."));
+            .orElseThrow();
     }
 }

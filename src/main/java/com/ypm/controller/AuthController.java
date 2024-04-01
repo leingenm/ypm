@@ -12,22 +12,21 @@ import org.springframework.web.servlet.ModelAndView;
 public class AuthController {
     @GetMapping("/success")
     public ModelAndView success() {
-        ModelAndView modelAndView = new ModelAndView("auth");
-        modelAndView.addObject("type", "success");
-        modelAndView.addObject("title", "Login Successful");
-        modelAndView.addObject("message",
+        return getModelAndView("success", "Login Success",
             "Welcome back! You have successfully logged in.");
-
-        return modelAndView;
     }
 
     @GetMapping("/error")
     public ModelAndView error() {
+        return getModelAndView("error", "Login Error",
+            "An error occurred while logging in. Please try again.");
+    }
+
+    private ModelAndView getModelAndView(String type, String title, String message) {
         ModelAndView modelAndView = new ModelAndView("auth");
-        modelAndView.addObject("type", "error");
-        modelAndView.addObject("title", "Login Error");
-        modelAndView.addObject("message",
-            "Sorry, there was an error with your login credentials. Please try again.");
+        modelAndView.addObject("type", type);
+        modelAndView.addObject("title", title);
+        modelAndView.addObject("message", message);
 
         return modelAndView;
     }
