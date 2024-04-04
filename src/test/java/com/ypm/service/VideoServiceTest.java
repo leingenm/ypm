@@ -95,7 +95,7 @@ public class VideoServiceTest {
     }
 
     @Test
-    void givenExistingVideo_whenDeleteVideo_thenNotException() throws IOException {
+    void givenExistingVideo_whenDeleteVideo_thenNoException() throws IOException {
         var playlistItems = mock(YouTube.PlaylistItems.class);
         var playlistItemsDelete = mock(YouTube.PlaylistItems.Delete.class);
         String videoId = "asdsdta_hdfyZSDF";

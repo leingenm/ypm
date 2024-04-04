@@ -54,10 +54,10 @@ public class VideoService {
             .execute();
     }
 
-    public void deleteVideo(String accessToken, String id) throws IOException {
+    public void deleteVideo(String accessToken, String videoId) throws IOException {
         youTubeClient
             .playlistItems()
-            .delete(id)
+            .delete(videoId)
             .setAccessToken(accessToken)
             .execute();
     }

@@ -73,4 +73,17 @@ public class PlayListController {
         return ResponseEntity.ok(videosService.moveVideos(accessToken, playlistId,
             targetPlaylistId, videosIds));
     }
+
+    @DeleteMapping("/{playlistId}")
+    public ResponseEntity<Void> deletePlayList(
+        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authentication,
+        @PathVariable String playlistId) throws IOException {
+
+        String accessToken = authentication
+            .getAccessToken()
+            .getTokenValue();
+
+        playListService.deletePlayList(accessToken, playlistId);
+        return ResponseEntity.noContent().build();
+    }
 }

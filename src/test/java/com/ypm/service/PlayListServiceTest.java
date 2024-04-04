@@ -14,8 +14,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @SpringBootTest
 public class PlayListServiceTest {
@@ -96,5 +96,20 @@ public class PlayListServiceTest {
 
         assertEquals(expectedPlaylist, result);
         assertEquals("Playlist Title", result.getSnippet().getTitle());
+    }
+
+    @Test
+    void givenExistingPlayList_whenDeletePlayList_thenNoException() throws IOException {
+        var playLists = mock(YouTube.Playlists.class);
+        var playListsDelete = mock(YouTube.Playlists.Delete.class);
+        String playListId = "asdsdta_hdfyZSDF";
+
+        when(youTubeClient.playlists()).thenReturn(playLists);
+        when(playLists.delete(playListId)).thenReturn(playListsDelete);
+        when(playListsDelete.setAccessToken(accessToken)).thenReturn(playListsDelete);
+
+        playListService.deletePlayList(accessToken, playListId);
+
+        verify(playLists, times(1)).delete(playListId);
     }
 }

@@ -17,7 +17,7 @@ public class VideoController {
     private final VideoService videosService;
 
     @DeleteMapping("/{videoId}")
-    public ResponseEntity<?> deleteVideos(
+    public ResponseEntity<Void> deleteVideos(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authentication,
         @PathVariable String videoId) throws IOException {
 
