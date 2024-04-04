@@ -49,4 +49,12 @@ public class PlayListService {
             .findFirst()
             .orElseThrow();
     }
+
+    public void deletePlayList(String accessToken, String playListId) throws IOException {
+        youTubeClient
+            .playlists()
+            .delete(playListId)
+            .setAccessToken(accessToken)
+            .execute();
+    }
 }
