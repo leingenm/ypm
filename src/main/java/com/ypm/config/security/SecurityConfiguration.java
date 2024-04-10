@@ -19,7 +19,8 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
             .oauth2Login(config -> {
                 config.defaultSuccessUrl("/auth/success", true);
-                config.failureHandler(new SimpleUrlAuthenticationFailureHandler("/auth/error"));
+                config.failureHandler(
+                    new SimpleUrlAuthenticationFailureHandler("/auth/error"));
             })
             .build();
     }
