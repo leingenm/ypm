@@ -5,6 +5,7 @@ import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.api.services.youtube.model.PlaylistSnippet;
+import com.ypm.dto.request.MergePlayListsRequest;
 import com.ypm.service.PlayListService;
 import com.ypm.service.VideoService;
 import org.junit.jupiter.api.Test;
@@ -22,9 +23,9 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,7 +65,9 @@ class PlayListControllerTest {
     }
 
     @Test
-    void givenCorrectRequest_whenGetPlayListVideos_thenResponseContainsVideoTitle() throws Exception {
+    void givenCorrectRequest_whenGetPlayListVideos_thenResponseContainsVideoTitle()
+        throws Exception {
+
         var login = oauth2Login()
             .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
 
@@ -82,7 +85,61 @@ class PlayListControllerTest {
     }
 
     @Test
-    void givenCorrectRequest_whenUpdatePlayListTitle_thenResponseContainsUpdatedTitle() throws Exception {
+    void givenCorrectRequest_whenCreatePlayList_thenResponseContainsCreatedPlayList()
+        throws Exception {
+
+        var login = oauth2Login()
+            .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
+
+        Playlist playList = new Playlist();
+        playList.setSnippet(new PlaylistSnippet().setTitle("New Playlist Title"));
+
+        when(playListService.createPlayList(any(), eq(playList.getSnippet())))
+            .thenReturn(playList);
+
+        mockMvc.perform(post("/playlists")
+                .with(login)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(playList.getSnippet())))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(playList)));
+
+        verify(playListService, times(1))
+            .createPlayList(any(), eq(playList.getSnippet()));
+    }
+
+    @Test
+    void givenCorrectRequest_whenMergePlayLists_thenResponseContainsMergedPlayList()
+        throws Exception {
+
+        var login = oauth2Login()
+            .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
+
+        Playlist playlist = new Playlist();
+        playlist.setSnippet(new PlaylistSnippet().setTitle("Merged Playlist Title"));
+
+        MergePlayListsRequest request =
+            new MergePlayListsRequest("Merged Playlist Title", List.of("id1", "id2"),
+                true);
+
+        when(playListService.mergePlayLists(anyString(), anyString(), anyList(), anyBoolean()))
+            .thenReturn(playlist);
+
+        mockMvc.perform(put("/playlists")
+                .with(login)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(playlist)));
+
+        verify(playListService, times(1))
+            .mergePlayLists(anyString(), anyString(), anyList(), anyBoolean());
+    }
+
+    @Test
+    void givenCorrectRequest_whenUpdatePlayListTitle_thenResponseContainsUpdatedTitle()
+        throws Exception {
+
         var login = oauth2Login()
             .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
 
@@ -122,5 +179,18 @@ class PlayListControllerTest {
 
         verify(videosService, times(1))
             .moveVideos(any(), any(), any(), any());
+    }
+
+    @Test
+    void givenCorrectRequest_whenDeletePlayList_thenResponseIsOk() throws Exception {
+        var login = oauth2Login()
+            .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
+
+        mockMvc.perform(delete("/playlists/{playlistId}", "someId")
+                .with(login))
+            .andExpect(status().isNoContent());
+
+        verify(playListService, times(1))
+            .deletePlayList(any(), any());
     }
 }

@@ -1,21 +1,22 @@
 package com.ypm.service;
 
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.Playlist;
-import com.google.api.services.youtube.model.PlaylistListResponse;
-import com.google.api.services.youtube.model.PlaylistSnippet;
+import com.google.api.services.youtube.model.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @SpringBootTest
 public class PlayListServiceTest {
@@ -25,6 +26,9 @@ public class PlayListServiceTest {
 
     @Mock
     private YouTube youTubeClient;
+
+    @Mock
+    private VideoService videoService;
 
     @InjectMocks
     private PlayListService playListService;
@@ -49,6 +53,85 @@ public class PlayListServiceTest {
         assertEquals(1, result.size());
         assertEquals(expectedPlaylist, result.get(0));
         assertEquals("Playlist Title", result.get(0).getSnippet().getTitle());
+    }
+
+    @Test
+    void givenCorrectData_whenMergePlayLists_thenPlayListsMerged() throws IOException {
+        var playlists = mock(YouTube.Playlists.class);
+        var playlistsList = mock(YouTube.Playlists.List.class);
+        var playlistsInsert = mock(YouTube.Playlists.Insert.class);
+        var playlistItems = mock(YouTube.PlaylistItems.class);
+        var playlistItemsList = mock(YouTube.PlaylistItems.List.class);
+        var playlistItemsInsert = mock(YouTube.PlaylistItems.Insert.class);
+        var playlistItemsDelete = mock(YouTube.PlaylistItems.Delete.class);
+        var playlistDelete = mock(YouTube.Playlists.Delete.class);
+        var expectedPlaylist = new Playlist();
+        expectedPlaylist.setSnippet(new PlaylistSnippet().setTitle("Merged Playlist"));
+        var playlistsListResponse = new PlaylistListResponse()
+            .setItems(List.of(expectedPlaylist));
+        var playListItemsListResponse =
+            new PlaylistItemListResponse().setItems(List.of(new PlaylistItem()));
+
+        when(youTubeClient.playlists()).thenReturn(playlists);
+        when(youTubeClient.playlistItems()).thenReturn(playlistItems);
+        when(playlists.list(List.of("snippet"))).thenReturn(playlistsList);
+        when(playlistsList.execute()).thenReturn(playlistsListResponse);
+        when(playlists.insert(any(), any())).thenReturn(playlistsInsert);
+        when(playlistsInsert.setAccessToken(anyString())).thenReturn(playlistsInsert);
+        when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
+        when(playlistItems.list(List.of("snippet"))).thenReturn(playlistItemsList);
+        when(playlistItemsList.setAccessToken(accessToken)).thenReturn(playlistItemsList);
+        when(playlistItemsList.execute()).thenReturn(playListItemsListResponse);
+        when(playlistItems.insert(eq(List.of("snippet")), any()))
+            .thenReturn(playlistItemsInsert);
+        when(playlistItemsDelete.setAccessToken(accessToken)).thenReturn(playlistItemsDelete);
+        when(playlists.delete(anyString())).thenReturn(playlistDelete);
+        when(playlistDelete.setAccessToken(accessToken)).thenReturn(playlistDelete);
+
+        assertNotNull(playlistsInsert, "playlistsInsert mock is null");
+
+        Playlist result = playListService.mergePlayLists(accessToken,
+            "Merged Playlist", List.of("playlistId1", "playlistId2"),
+            true);
+
+        assertEquals(expectedPlaylist, result);
+        assertEquals("Merged Playlist", result.getSnippet().getTitle());
+    }
+
+    @Test
+    void givenCorrectData_whenCreatePlayListOverload_thenPlayListCreated() throws IOException {
+        var playlists = mock(YouTube.Playlists.class);
+        var playlistsInsert = mock(YouTube.Playlists.Insert.class);
+        var expectedPlaylist = new Playlist();
+        expectedPlaylist.setSnippet(new PlaylistSnippet().setTitle("Playlist Title"));
+
+        when(youTubeClient.playlists()).thenReturn(playlists);
+        when(playlists.insert(List.of("snippet"), expectedPlaylist)).thenReturn(playlistsInsert);
+        when(playlistsInsert.setAccessToken(accessToken)).thenReturn(playlistsInsert);
+        when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
+
+        Playlist result = playListService.createPlayList(accessToken, "Playlist Title");
+
+        assertEquals(expectedPlaylist, result);
+        assertEquals("Playlist Title", result.getSnippet().getTitle());
+    }
+
+    @Test
+    void givenCorrectData_whenCreatePlayList_thenPlayListCreated() throws IOException {
+        var playlists = mock(YouTube.Playlists.class);
+        var playlistsInsert = mock(YouTube.Playlists.Insert.class);
+        var expectedPlaylist = new Playlist();
+        expectedPlaylist.setSnippet(new PlaylistSnippet().setTitle("Playlist Title"));
+
+        when(youTubeClient.playlists()).thenReturn(playlists);
+        when(playlists.insert(List.of("snippet"), expectedPlaylist)).thenReturn(playlistsInsert);
+        when(playlistsInsert.setAccessToken(accessToken)).thenReturn(playlistsInsert);
+        when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
+
+        Playlist result = playListService.createPlayList(accessToken, "Playlist Title");
+
+        assertEquals(expectedPlaylist, result);
+        assertEquals("Playlist Title", result.getSnippet().getTitle());
     }
 
     @Test
@@ -96,5 +179,20 @@ public class PlayListServiceTest {
 
         assertEquals(expectedPlaylist, result);
         assertEquals("Playlist Title", result.getSnippet().getTitle());
+    }
+
+    @Test
+    void givenExistingPlayList_whenDeletePlayList_thenNoException() throws IOException {
+        var playLists = mock(YouTube.Playlists.class);
+        var playListsDelete = mock(YouTube.Playlists.Delete.class);
+        String playListId = "asdsdta_hdfyZSDF";
+
+        when(youTubeClient.playlists()).thenReturn(playLists);
+        when(playLists.delete(playListId)).thenReturn(playListsDelete);
+        when(playListsDelete.setAccessToken(accessToken)).thenReturn(playListsDelete);
+
+        playListService.deletePlayList(accessToken, playListId);
+
+        verify(playLists, times(1)).delete(playListId);
     }
 }
