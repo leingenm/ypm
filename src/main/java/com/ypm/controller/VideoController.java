@@ -17,11 +17,11 @@ public class VideoController {
     private final VideoService videosService;
 
     @DeleteMapping("/{videoId}")
-    public ResponseEntity<?> deleteVideos(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authentication,
+    public ResponseEntity<Void> deleteVideos(
+        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
         @PathVariable String videoId) throws IOException {
 
-        String accessToken = authentication
+        String accessToken = authClient
             .getAccessToken()
             .getTokenValue();
 

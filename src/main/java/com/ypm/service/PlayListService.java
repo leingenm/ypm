@@ -2,6 +2,8 @@ package com.ypm.service;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Playlist;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistSnippet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.util.List;
 public class PlayListService {
 
     private final YouTube youTubeClient;
+    private final VideoService videoService;
 
     public List<Playlist> getPlayLists(String accessToken) throws IOException {
         return youTubeClient
@@ -22,6 +25,41 @@ public class PlayListService {
             .setMine(true)
             .execute()
             .getItems();
+    }
+
+    public Playlist mergePlayLists(String accessToken, String mergedPlayListName,
+                                   List<String> playListsIds,
+                                   boolean deleteAfterMerge) throws IOException {
+
+        Playlist mergedPlayList = createPlayList(accessToken, mergedPlayListName);
+
+        for (String playListId : playListsIds) {
+            List<PlaylistItem> videos = videoService.getPlayListVideos(accessToken, playListId);
+            List<String> videosIds = videos.stream().map(PlaylistItem::getId).toList();
+            videoService.moveVideos(accessToken, playListId, mergedPlayList.getId(), videosIds);
+            if (deleteAfterMerge) deletePlayList(accessToken, playListId);
+        }
+
+        return mergedPlayList;
+    }
+
+    public Playlist createPlayList(String accessToken,
+                                   String title) throws IOException {
+        PlaylistSnippet playList = new PlaylistSnippet();
+        playList.setTitle(title);
+        return createPlayList(accessToken, playList);
+    }
+
+    public Playlist createPlayList(String accessToken,
+                                   PlaylistSnippet playlistSnippet) throws IOException {
+        Playlist playlist = new Playlist();
+        playlist.setSnippet(playlistSnippet);
+
+        return youTubeClient
+            .playlists()
+            .insert(List.of("snippet"), playlist)
+            .setAccessToken(accessToken)
+            .execute();
     }
 
     public Playlist updatePlayListTitle(String accessToken, String playListId,
@@ -48,5 +86,13 @@ public class PlayListService {
             .stream()
             .findFirst()
             .orElseThrow();
+    }
+
+    public void deletePlayList(String accessToken, String playListId) throws IOException {
+        youTubeClient
+            .playlists()
+            .delete(playListId)
+            .setAccessToken(accessToken)
+            .execute();
     }
 }
