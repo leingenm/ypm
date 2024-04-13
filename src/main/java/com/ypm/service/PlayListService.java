@@ -4,6 +4,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
+import com.ypm.exception.PlayListNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +86,10 @@ public class PlayListService {
             .getItems()
             .stream()
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(() ->
+                new PlayListNotFoundException(playListId,
+                    "At some stage we were not able to find one of the request-related playlists."
+                        + " Please repeat the request."));
     }
 
     public void deletePlayList(String accessToken, String playListId) throws IOException {
