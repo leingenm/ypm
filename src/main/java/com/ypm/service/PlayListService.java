@@ -88,8 +88,7 @@ public class PlayListService {
             .findFirst()
             .orElseThrow(() ->
                 new PlayListNotFoundException(playListId,
-                    "At some stage we were not able to find one of the request-related playlists."
-                        + " Please repeat the request."));
+                    "At some stage we were not able to find one of the request-related playlists."));
     }
 
     public void deletePlayList(String accessToken, String playListId) throws IOException {
