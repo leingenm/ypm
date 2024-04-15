@@ -2,21 +2,19 @@ package com.ypm.service;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
+import com.ypm.constant.Part;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 @SpringBootTest
 public class PlayListServiceTest {
@@ -43,7 +41,7 @@ public class PlayListServiceTest {
             .setItems(List.of(expectedPlaylist));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.list(List.of("snippet"))).thenReturn(playlistsList);
+        when(playlists.list(List.of(Part.SNIPPET))).thenReturn(playlistsList);
         when(playlistsList.setAccessToken(accessToken)).thenReturn(playlistsList);
         when(playlistsList.setMine(true)).thenReturn(playlistsList);
         when(playlistsList.execute()).thenReturn(playlistsListResponse);
@@ -74,15 +72,15 @@ public class PlayListServiceTest {
 
         when(youTubeClient.playlists()).thenReturn(playlists);
         when(youTubeClient.playlistItems()).thenReturn(playlistItems);
-        when(playlists.list(List.of("snippet"))).thenReturn(playlistsList);
+        when(playlists.list(List.of(Part.SNIPPET))).thenReturn(playlistsList);
         when(playlistsList.execute()).thenReturn(playlistsListResponse);
         when(playlists.insert(any(), any())).thenReturn(playlistsInsert);
         when(playlistsInsert.setAccessToken(anyString())).thenReturn(playlistsInsert);
         when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
-        when(playlistItems.list(List.of("snippet"))).thenReturn(playlistItemsList);
+        when(playlistItems.list(List.of(Part.SNIPPET))).thenReturn(playlistItemsList);
         when(playlistItemsList.setAccessToken(accessToken)).thenReturn(playlistItemsList);
         when(playlistItemsList.execute()).thenReturn(playListItemsListResponse);
-        when(playlistItems.insert(eq(List.of("snippet")), any()))
+        when(playlistItems.insert(eq(List.of(Part.SNIPPET)), any()))
             .thenReturn(playlistItemsInsert);
         when(playlistItemsDelete.setAccessToken(accessToken)).thenReturn(playlistItemsDelete);
         when(playlists.delete(anyString())).thenReturn(playlistDelete);
@@ -106,7 +104,7 @@ public class PlayListServiceTest {
         expectedPlaylist.setSnippet(new PlaylistSnippet().setTitle("Playlist Title"));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.insert(List.of("snippet"), expectedPlaylist)).thenReturn(playlistsInsert);
+        when(playlists.insert(List.of(Part.SNIPPET), expectedPlaylist)).thenReturn(playlistsInsert);
         when(playlistsInsert.setAccessToken(accessToken)).thenReturn(playlistsInsert);
         when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
 
@@ -124,7 +122,7 @@ public class PlayListServiceTest {
         expectedPlaylist.setSnippet(new PlaylistSnippet().setTitle("Playlist Title"));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.insert(List.of("snippet"), expectedPlaylist)).thenReturn(playlistsInsert);
+        when(playlists.insert(List.of(Part.SNIPPET), expectedPlaylist)).thenReturn(playlistsInsert);
         when(playlistsInsert.setAccessToken(accessToken)).thenReturn(playlistsInsert);
         when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
 
@@ -145,12 +143,12 @@ public class PlayListServiceTest {
             .setItems(List.of(expectedPlaylist));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.list(List.of("snippet"))).thenReturn(playlistsList);
+        when(playlists.list(List.of(Part.SNIPPET))).thenReturn(playlistsList);
         when(playlistsList.setAccessToken(accessToken)).thenReturn(playlistsList);
         when(playlistsList.setMine(true)).thenReturn(playlistsList);
         when(playlistsList.setId(any())).thenReturn(playlistsList);
         when(playlistsList.execute()).thenReturn(playlistsListResponse);
-        when(playlists.update(List.of("snippet"), expectedPlaylist)).thenReturn(playlistUpdate);
+        when(playlists.update(List.of(Part.SNIPPET), expectedPlaylist)).thenReturn(playlistUpdate);
         when(playlistUpdate.setAccessToken(accessToken)).thenReturn(playlistUpdate);
         when(playlistUpdate.execute()).thenReturn(expectedPlaylist);
 
@@ -169,7 +167,7 @@ public class PlayListServiceTest {
             .setItems(List.of(expectedPlaylist));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.list(List.of("snippet"))).thenReturn(playlistsList);
+        when(playlists.list(List.of(Part.SNIPPET))).thenReturn(playlistsList);
         when(playlistsList.setAccessToken(accessToken)).thenReturn(playlistsList);
         when(playlistsList.setMine(true)).thenReturn(playlistsList);
         when(playlistsList.setId(List.of("playlistId"))).thenReturn(playlistsList);
