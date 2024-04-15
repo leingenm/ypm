@@ -4,6 +4,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
+import com.ypm.constant.Part;
 import com.ypm.exception.PlayListNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class PlayListService {
     public List<Playlist> getPlayLists(String accessToken) throws IOException {
         return youTubeClient
             .playlists()
-            .list(List.of("snippet"))
+            .list(List.of(Part.SNIPPET))
             .setAccessToken(accessToken)
             .setMine(true)
             .execute()
@@ -58,7 +59,7 @@ public class PlayListService {
 
         return youTubeClient
             .playlists()
-            .insert(List.of("snippet"), playlist)
+            .insert(List.of(Part.SNIPPET), playlist)
             .setAccessToken(accessToken)
             .execute();
     }
@@ -71,7 +72,7 @@ public class PlayListService {
 
         return youTubeClient
             .playlists()
-            .update(List.of("snippet"), playlistToEdit)
+            .update(List.of(Part.SNIPPET), playlistToEdit)
             .setAccessToken(accessToken)
             .execute();
     }
@@ -79,7 +80,7 @@ public class PlayListService {
     public Playlist getPlayListById(String accessToken, String playListId) throws IOException {
         return youTubeClient
             .playlists()
-            .list(List.of("snippet"))
+            .list(List.of(Part.SNIPPET))
             .setId(List.of(playListId))
             .setAccessToken(accessToken)
             .execute()
