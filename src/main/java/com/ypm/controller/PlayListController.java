@@ -4,6 +4,7 @@ import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 import com.ypm.dto.request.MergePlayListsRequest;
+import com.ypm.dto.request.PlaylistCreationRequest;
 import com.ypm.service.PlayListService;
 import com.ypm.service.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +28,7 @@ public class PlayListController {
     public ResponseEntity<List<Playlist>> getPlayLists(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient) throws IOException {
 
-        String accessToken = authClient
-            .getAccessToken()
-            .getTokenValue();
+        String accessToken = getTokenFromAuthClient(authClient);
 
         return ResponseEntity.ok(playListService.getPlayLists(accessToken));
     }
@@ -38,24 +37,19 @@ public class PlayListController {
     public ResponseEntity<List<PlaylistItem>> getPlayListVideos(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
         @PathVariable String playlistId) throws IOException {
-
-        String accessToken = authClient
-            .getAccessToken()
-            .getTokenValue();
+        String accessToken = getTokenFromAuthClient(authClient);
 
         return ResponseEntity.ok(videosService.getPlayListVideos(accessToken, playlistId));
     }
 
     @PostMapping
-    public ResponseEntity<Playlist> createPlayList(
+    public ResponseEntity<Playlist> createPlaylist(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @RequestBody PlaylistSnippet playlistSnippet) throws IOException {
-
-        String accessToken = authClient
-            .getAccessToken()
-            .getTokenValue();
-
-        return ResponseEntity.ok(playListService.createPlayList(accessToken, playlistSnippet));
+        @RequestBody PlaylistCreationRequest request
+    ) throws IOException {
+        String accessToken = getTokenFromAuthClient(authClient);
+        var createdPlayList = playListService.createPlayList(accessToken, request);
+        return ResponseEntity.ok(createdPlayList);
     }
 
     @PutMapping()
@@ -63,9 +57,7 @@ public class PlayListController {
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
         @RequestBody MergePlayListsRequest request) throws IOException {
 
-        String accessToken = authClient
-            .getAccessToken()
-            .getTokenValue();
+        String accessToken = getTokenFromAuthClient(authClient);
 
         return ResponseEntity.ok(playListService.mergePlayLists(accessToken,
             request.mergedPlayListTitle(), request.playListsIds(), request.deleteAfterMerge()));
@@ -77,9 +69,7 @@ public class PlayListController {
         @PathVariable String playlistId,
         @RequestBody PlaylistSnippet dataWithUpdatedTitle) throws IOException {
 
-        String accessToken = authClient
-            .getAccessToken()
-            .getTokenValue();
+        String accessToken = getTokenFromAuthClient(authClient);
 
         String newTitle = dataWithUpdatedTitle.getTitle();
         return ResponseEntity.ok(playListService.updatePlayListTitle(accessToken, playlistId,
@@ -93,9 +83,7 @@ public class PlayListController {
         @PathVariable String targetPlaylistId,
         @RequestBody List<String> videosIds) throws IOException {
 
-        String accessToken = authClient
-            .getAccessToken()
-            .getTokenValue();
+        String accessToken = getTokenFromAuthClient(authClient);
 
         return ResponseEntity.ok(videosService.moveVideos(accessToken, playlistId,
             targetPlaylistId, videosIds));
@@ -106,11 +94,13 @@ public class PlayListController {
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
         @PathVariable String playlistId) throws IOException {
 
-        String accessToken = authClient
-            .getAccessToken()
-            .getTokenValue();
+        String accessToken = getTokenFromAuthClient(authClient);
 
         playListService.deletePlayList(accessToken, playlistId);
         return ResponseEntity.noContent().build();
+    }
+
+    private String getTokenFromAuthClient(OAuth2AuthorizedClient authClient) {
+        return authClient.getAccessToken().getTokenValue();
     }
 }
