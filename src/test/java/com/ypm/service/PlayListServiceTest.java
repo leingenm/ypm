@@ -3,6 +3,8 @@ package com.ypm.service;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
 import com.ypm.constant.Part;
+import com.ypm.constant.PrivacyStatus;
+import com.ypm.dto.PlaylistDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -88,45 +91,28 @@ public class PlayListServiceTest {
 
         assertNotNull(playlistsInsert, "playlistsInsert mock is null");
 
-        Playlist result = playListService.mergePlayLists(accessToken,
-            "Merged Playlist", List.of("playlistId1", "playlistId2"),
-            true);
+        var playlistDto = new PlaylistDto("Merged Playlist", Optional.empty(), PrivacyStatus.PRIVATE);
+        Playlist result = playListService.mergePlayLists(accessToken, playlistDto, List.of("playlistId1", "playlistId2"), true);
 
         assertEquals(expectedPlaylist, result);
         assertEquals("Merged Playlist", result.getSnippet().getTitle());
     }
 
     @Test
-    void givenCorrectData_whenCreatePlayListOverload_thenPlayListCreated() throws IOException {
-        var playlists = mock(YouTube.Playlists.class);
-        var playlistsInsert = mock(YouTube.Playlists.Insert.class);
-        var expectedPlaylist = new Playlist();
-        expectedPlaylist.setSnippet(new PlaylistSnippet().setTitle("Playlist Title"));
-
-        when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.insert(List.of(Part.SNIPPET), expectedPlaylist)).thenReturn(playlistsInsert);
-        when(playlistsInsert.setAccessToken(accessToken)).thenReturn(playlistsInsert);
-        when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
-
-        Playlist result = playListService.createPlayList(accessToken, "Playlist Title");
-
-        assertEquals(expectedPlaylist, result);
-        assertEquals("Playlist Title", result.getSnippet().getTitle());
-    }
-
-    @Test
     void givenCorrectData_whenCreatePlayList_thenPlayListCreated() throws IOException {
         var playlists = mock(YouTube.Playlists.class);
         var playlistsInsert = mock(YouTube.Playlists.Insert.class);
-        var expectedPlaylist = new Playlist();
-        expectedPlaylist.setSnippet(new PlaylistSnippet().setTitle("Playlist Title"));
+        var expectedPlaylist = new Playlist()
+            .setSnippet(new PlaylistSnippet().setTitle("Playlist Title"))
+            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.PRIVATE));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.insert(List.of(Part.SNIPPET), expectedPlaylist)).thenReturn(playlistsInsert);
+        when(playlists.insert(List.of(Part.SNIPPET, Part.STATUS), expectedPlaylist)).thenReturn(playlistsInsert);
         when(playlistsInsert.setAccessToken(accessToken)).thenReturn(playlistsInsert);
         when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
 
-        Playlist result = playListService.createPlayList(accessToken, "Playlist Title");
+        var playlistDto = new PlaylistDto("Playlist Title", Optional.empty(), PrivacyStatus.PRIVATE);
+        Playlist result = playListService.createPlayList(accessToken, playlistDto);
 
         assertEquals(expectedPlaylist, result);
         assertEquals("Playlist Title", result.getSnippet().getTitle());

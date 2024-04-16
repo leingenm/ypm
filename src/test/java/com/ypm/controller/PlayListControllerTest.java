@@ -1,10 +1,9 @@
 package com.ypm.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.services.youtube.model.Playlist;
-import com.google.api.services.youtube.model.PlaylistItem;
-import com.google.api.services.youtube.model.PlaylistItemSnippet;
-import com.google.api.services.youtube.model.PlaylistSnippet;
+import com.google.api.services.youtube.model.*;
+import com.ypm.constant.PrivacyStatus;
+import com.ypm.dto.PlaylistDto;
 import com.ypm.dto.request.MergePlayListsRequest;
 import com.ypm.dto.response.ExceptionResponse;
 import com.ypm.exception.PlayListNotFoundException;
@@ -24,6 +23,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -97,21 +97,24 @@ class PlayListControllerTest {
         var login = oauth2Login()
             .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
 
-        Playlist playList = new Playlist();
-        playList.setSnippet(new PlaylistSnippet().setTitle("New Playlist Title"));
+        var playlistTitle = "New Playlist Title";
+        var playList = new Playlist()
+            .setSnippet(new PlaylistSnippet().setTitle(playlistTitle))
+            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.PRIVATE));
+        var playlistDto = new PlaylistDto(playlistTitle, Optional.empty(), PrivacyStatus.PRIVATE);
 
-        when(playListService.createPlayList(any(), eq(playList.getSnippet())))
+        when(playListService.createPlayList(any(), eq(playlistDto)))
             .thenReturn(playList);
 
         mockMvc.perform(post("/playlists")
                 .with(login)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(playList.getSnippet())))
+                .content(objectMapper.writeValueAsString(playlistDto)))
             .andExpect(status().isOk())
             .andExpect(content().json(objectMapper.writeValueAsString(playList)));
 
         verify(playListService, times(1))
-            .createPlayList(any(), eq(playList.getSnippet()));
+            .createPlayList(any(), eq(playlistDto));
     }
 
     @Test
@@ -124,11 +127,11 @@ class PlayListControllerTest {
         Playlist playlist = new Playlist();
         playlist.setSnippet(new PlaylistSnippet().setTitle("Merged Playlist Title"));
 
+        var playlistDto = new PlaylistDto("Merged Playlist Title", Optional.of("Description"), PrivacyStatus.PRIVATE);
         MergePlayListsRequest request =
-            new MergePlayListsRequest("Merged Playlist Title", List.of("id1", "id2"),
-                true);
+            new MergePlayListsRequest(playlistDto, List.of("id1", "id2"), true);
 
-        when(playListService.mergePlayLists(anyString(), anyString(), anyList(), anyBoolean()))
+        when(playListService.mergePlayLists(anyString(), any(PlaylistDto.class), anyList(), anyBoolean()))
             .thenReturn(playlist);
 
         mockMvc.perform(put("/playlists")
@@ -139,7 +142,7 @@ class PlayListControllerTest {
             .andExpect(content().json(objectMapper.writeValueAsString(playlist)));
 
         verify(playListService, times(1))
-            .mergePlayLists(anyString(), anyString(), anyList(), anyBoolean());
+            .mergePlayLists(anyString(), any(PlaylistDto.class), anyList(), anyBoolean());
     }
 
     @Test

@@ -4,7 +4,9 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
+import com.google.api.services.youtube.model.PlaylistStatus;
 import com.ypm.constant.Part;
+import com.ypm.dto.PlaylistDto;
 import com.ypm.exception.PlayListNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,15 +31,15 @@ public class PlayListService {
             .getItems();
     }
 
-    public Playlist mergePlayLists(String accessToken, String mergedPlayListName,
+    public Playlist mergePlayLists(String accessToken, PlaylistDto playlistDto,
                                    List<String> playListsIds,
                                    boolean deleteAfterMerge) throws IOException {
 
-        Playlist mergedPlayList = createPlayList(accessToken, mergedPlayListName);
+        var mergedPlayList = createPlayList(accessToken, playlistDto);
 
-        for (String playListId : playListsIds) {
-            List<PlaylistItem> videos = videoService.getPlayListVideos(accessToken, playListId);
-            List<String> videosIds = videos.stream().map(PlaylistItem::getId).toList();
+        for (var playListId : playListsIds) {
+            var videos = videoService.getPlayListVideos(accessToken, playListId);
+            var videosIds = videos.stream().map(PlaylistItem::getId).toList();
             videoService.moveVideos(accessToken, playListId, mergedPlayList.getId(), videosIds);
             if (deleteAfterMerge) deletePlayList(accessToken, playListId);
         }
@@ -45,21 +47,22 @@ public class PlayListService {
         return mergedPlayList;
     }
 
-    public Playlist createPlayList(String accessToken,
-                                   String title) throws IOException {
-        PlaylistSnippet playList = new PlaylistSnippet();
-        playList.setTitle(title);
-        return createPlayList(accessToken, playList);
-    }
+    public Playlist createPlayList(String accessToken, PlaylistDto playlistDto) throws IOException {
+        var status = playlistDto.status().isEmpty() ? "private" : playlistDto.status();
+        var playlistStatus = new PlaylistStatus()
+            .setPrivacyStatus(status);
 
-    public Playlist createPlayList(String accessToken,
-                                   PlaylistSnippet playlistSnippet) throws IOException {
-        Playlist playlist = new Playlist();
-        playlist.setSnippet(playlistSnippet);
+        var playlistSnippet = new PlaylistSnippet()
+            .setTitle(playlistDto.title())
+            .setDescription(playlistDto.description().orElse(null));
+
+        var playlist = new Playlist()
+            .setSnippet(playlistSnippet)
+            .setStatus(playlistStatus);
 
         return youTubeClient
             .playlists()
-            .insert(List.of(Part.SNIPPET), playlist)
+            .insert(List.of(Part.SNIPPET, Part.STATUS), playlist)
             .setAccessToken(accessToken)
             .execute();
     }
@@ -67,7 +70,7 @@ public class PlayListService {
     public Playlist updatePlayListTitle(String accessToken, String playListId,
                                         String newTitle) throws IOException {
 
-        Playlist playlistToEdit = getPlayListById(accessToken, playListId);
+        var playlistToEdit = getPlayListById(accessToken, playListId);
         playlistToEdit.getSnippet().setTitle(newTitle);
 
         return youTubeClient
