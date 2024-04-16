@@ -28,7 +28,7 @@ public class PlayListController {
     public ResponseEntity<List<Playlist>> getPlayLists(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient) throws IOException {
 
-        String accessToken = getTokenFromAuthClient(authClient);
+        var accessToken = getTokenFromAuthClient(authClient);
 
         return ResponseEntity.ok(playListService.getPlayLists(accessToken));
     }
@@ -37,7 +37,7 @@ public class PlayListController {
     public ResponseEntity<List<PlaylistItem>> getPlayListVideos(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
         @PathVariable String playlistId) throws IOException {
-        String accessToken = getTokenFromAuthClient(authClient);
+        var accessToken = getTokenFromAuthClient(authClient);
 
         return ResponseEntity.ok(videosService.getPlayListVideos(accessToken, playlistId));
     }
@@ -47,7 +47,7 @@ public class PlayListController {
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
         @RequestBody PlaylistCreationRequest request
     ) throws IOException {
-        String accessToken = getTokenFromAuthClient(authClient);
+        var accessToken = getTokenFromAuthClient(authClient);
         var createdPlayList = playListService.createPlayList(accessToken, request);
         return ResponseEntity.ok(createdPlayList);
     }
@@ -57,7 +57,7 @@ public class PlayListController {
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
         @RequestBody MergePlayListsRequest request) throws IOException {
 
-        String accessToken = getTokenFromAuthClient(authClient);
+        var accessToken = getTokenFromAuthClient(authClient);
 
         return ResponseEntity.ok(playListService.mergePlayLists(accessToken,
             request.mergedPlayListTitle(), request.playListsIds(), request.deleteAfterMerge()));
@@ -69,9 +69,9 @@ public class PlayListController {
         @PathVariable String playlistId,
         @RequestBody PlaylistSnippet dataWithUpdatedTitle) throws IOException {
 
-        String accessToken = getTokenFromAuthClient(authClient);
+        var accessToken = getTokenFromAuthClient(authClient);
 
-        String newTitle = dataWithUpdatedTitle.getTitle();
+        var newTitle = dataWithUpdatedTitle.getTitle();
         return ResponseEntity.ok(playListService.updatePlayListTitle(accessToken, playlistId,
             newTitle));
     }
@@ -83,7 +83,7 @@ public class PlayListController {
         @PathVariable String targetPlaylistId,
         @RequestBody List<String> videosIds) throws IOException {
 
-        String accessToken = getTokenFromAuthClient(authClient);
+        var accessToken = getTokenFromAuthClient(authClient);
 
         return ResponseEntity.ok(videosService.moveVideos(accessToken, playlistId,
             targetPlaylistId, videosIds));
@@ -94,7 +94,7 @@ public class PlayListController {
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
         @PathVariable String playlistId) throws IOException {
 
-        String accessToken = getTokenFromAuthClient(authClient);
+        var accessToken = getTokenFromAuthClient(authClient);
 
         playListService.deletePlayList(accessToken, playlistId);
         return ResponseEntity.noContent().build();
