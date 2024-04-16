@@ -118,6 +118,30 @@ class PlayListControllerTest {
     }
 
     @Test
+    void givenCorrectRequest_whenCreateUnlistedPlaylist_thenResponseContainsCreatedPlaylist() throws Exception {
+        var login = oauth2Login()
+            .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
+
+        var playlistTitle = "New Unlisted Playlist";
+        var playlistDescription = "Description";
+        var playlist = new Playlist()
+            .setSnippet(new PlaylistSnippet().setTitle(playlistTitle).setDescription(playlistDescription))
+            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.UNLISTED));
+
+        var playlistDto = new PlaylistDto(playlistTitle, Optional.of(playlistDescription), PrivacyStatus.UNLISTED);
+
+        when(playListService.createPlayList(any(), eq(playlistDto)))
+            .thenReturn(playlist);
+
+        mockMvc.perform(post("/playlists")
+            .with(login)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(playlistDto)))
+        .andExpect(status().isOk())
+        .andExpect(content().json(objectMapper.writeValueAsString(playlist)));
+    }
+
+    @Test
     void givenCorrectRequest_whenMergePlayLists_thenResponseContainsMergedPlayList()
         throws Exception {
 
