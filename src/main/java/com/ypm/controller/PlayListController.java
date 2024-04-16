@@ -3,8 +3,8 @@ package com.ypm.controller;
 import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
-import com.ypm.dto.request.MergePlayListsRequest;
 import com.ypm.dto.PlaylistDto;
+import com.ypm.dto.request.MergePlayListsRequest;
 import com.ypm.service.PlayListService;
 import com.ypm.service.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -45,10 +45,10 @@ public class PlayListController {
     @PostMapping
     public ResponseEntity<Playlist> createPlaylist(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @RequestBody PlaylistDto request
+        @RequestBody PlaylistDto playlistDto
     ) throws IOException {
         var accessToken = getTokenFromAuthClient(authClient);
-        var createdPlayList = playListService.createPlayList(accessToken, request);
+        var createdPlayList = playListService.createPlayList(accessToken, playlistDto);
         return ResponseEntity.ok(createdPlayList);
     }
 
