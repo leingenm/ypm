@@ -4,7 +4,7 @@ import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 import com.ypm.dto.request.MergePlayListsRequest;
-import com.ypm.dto.request.PlaylistCreationRequest;
+import com.ypm.dto.PlaylistDto;
 import com.ypm.service.PlayListService;
 import com.ypm.service.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class PlayListController {
     @PostMapping
     public ResponseEntity<Playlist> createPlaylist(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @RequestBody PlaylistCreationRequest request
+        @RequestBody PlaylistDto request
     ) throws IOException {
         var accessToken = getTokenFromAuthClient(authClient);
         var createdPlayList = playListService.createPlayList(accessToken, request);
@@ -55,12 +55,12 @@ public class PlayListController {
     @PutMapping()
     public ResponseEntity<Playlist> mergePlayLists(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @RequestBody MergePlayListsRequest request) throws IOException {
-
+        @RequestBody MergePlayListsRequest request
+    ) throws IOException {
         var accessToken = getTokenFromAuthClient(authClient);
+        var mergedPlaylist = playListService.mergePlayLists(accessToken, request.playlistDto(), request.playListsIds(), request.deleteAfterMerge());
 
-        return ResponseEntity.ok(playListService.mergePlayLists(accessToken,
-            request.mergedPlayListTitle(), request.playListsIds(), request.deleteAfterMerge()));
+        return ResponseEntity.ok(mergedPlaylist);
     }
 
     @PutMapping("/{playlistId}")
