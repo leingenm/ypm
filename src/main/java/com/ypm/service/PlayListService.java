@@ -6,7 +6,7 @@ import com.ypm.dto.PlaylistDto;
 import java.io.IOException;
 import java.util.List;
 
-public interface PlayListService extends GoogleService {
+public interface PlayListService {
 
     List<Playlist> getPlayLists(String accessToken) throws IOException;
 
