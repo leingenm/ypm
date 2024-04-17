@@ -4,7 +4,7 @@ import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponseException;
-import com.ypm.service.VideoService;
+import com.ypm.service.VideoServiceImp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class VideoControllerTest {
 
     @MockBean
-    private VideoService videosService;
+    private VideoServiceImp videosService;
 
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
