@@ -5,6 +5,7 @@ import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 import com.google.api.services.youtube.model.PlaylistStatus;
+import com.ypm.constant.Part;
 import com.ypm.constant.PrivacyStatus;
 import com.ypm.dto.PlaylistDto;
 import com.ypm.exception.PlayListNotFoundException;
@@ -25,7 +26,7 @@ public class PlayListServiceImp implements PlayListService {
     public List<Playlist> getPlayLists(String accessToken) throws IOException {
         return youTubeClient
             .playlists()
-            .list(List.of(SNIPPET))
+            .list(List.of(Part.SNIPPET.toString()))
             .setAccessToken(accessToken)
             .setMine(true)
             .execute()
@@ -68,7 +69,7 @@ public class PlayListServiceImp implements PlayListService {
 
         return youTubeClient
             .playlists()
-            .insert(List.of(SNIPPET, STATUS), playlist)
+            .insert(List.of(Part.STATUS.toString(), Part.SNIPPET.toString()), playlist)
             .setAccessToken(accessToken)
             .execute();
     }
@@ -82,7 +83,7 @@ public class PlayListServiceImp implements PlayListService {
 
         return youTubeClient
             .playlists()
-            .update(List.of(SNIPPET), playlistToEdit)
+            .update(List.of(Part.SNIPPET.toString()), playlistToEdit)
             .setAccessToken(accessToken)
             .execute();
     }
@@ -91,7 +92,7 @@ public class PlayListServiceImp implements PlayListService {
     public Playlist getPlayListById(String accessToken, String playListId) throws IOException {
         return youTubeClient
             .playlists()
-            .list(List.of(SNIPPET))
+            .list(List.of(Part.SNIPPET.toString()))
             .setId(List.of(playListId))
             .setAccessToken(accessToken)
             .execute()

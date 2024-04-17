@@ -5,7 +5,7 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import java.io.IOException;
 import java.util.List;
 
-public interface VideoService extends GoogleService {
+public interface VideoService {
 
     List<PlaylistItem> moveVideos(String accessToken,
                                   String playListId,

@@ -2,6 +2,7 @@ package com.ypm.service;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
+import com.ypm.constant.Part;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class VideoServiceImp implements VideoService {
 
         return youTubeClient
             .playlistItems()
-            .list(List.of(SNIPPET))
+            .list(List.of(Part.SNIPPET.toString()))
             .setId(videosIds)
             .setAccessToken(accessToken)
             .execute()
@@ -52,7 +53,7 @@ public class VideoServiceImp implements VideoService {
     public PlaylistItem insertVideo(String accessToken, PlaylistItem playlistItem) throws IOException {
         return youTubeClient
             .playlistItems()
-            .insert(List.of(SNIPPET), playlistItem)
+            .insert(List.of(Part.SNIPPET.toString()), playlistItem)
             .setAccessToken(accessToken)
             .execute();
     }
@@ -72,7 +73,7 @@ public class VideoServiceImp implements VideoService {
 
         return youTubeClient
             .playlistItems()
-            .list(List.of(SNIPPET))
+            .list(List.of(Part.SNIPPET.toString()))
             .setPlaylistId(playListId)
             .setAccessToken(accessToken)
             .execute()
