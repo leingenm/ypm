@@ -4,7 +4,6 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
-import com.ypm.constant.Part;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -26,7 +25,7 @@ public class VideoServiceTest {
     private YouTube youTubeClient;
 
     @InjectMocks
-    private VideoService videoService;
+    private VideoServiceImp videoService;
 
     @Test
     void givenExistingPlayList_whenGetPlayListVideos_thenPlayListVideosReturned() throws IOException {
@@ -41,7 +40,7 @@ public class VideoServiceTest {
             .setItems(List.of(expectedPlaylistItem));
 
         when(youTubeClient.playlistItems()).thenReturn(playlistItems);
-        when(playlistItems.list(List.of(Part.SNIPPET))).thenReturn(playlistItemsList);
+        when(playlistItems.list(List.of(videoService.SNIPPET))).thenReturn(playlistItemsList);
         when(playlistItemsList.setAccessToken(accessToken)).thenReturn(playlistItemsList);
         when(playlistItemsList.setPlaylistId(playlistId)).thenReturn(playlistItemsList);
         when(playlistItemsList.execute()).thenReturn(playlistItemsListResponse);
@@ -65,7 +64,7 @@ public class VideoServiceTest {
             .setItems(List.of(expectedPlaylistItem, expectedPlaylistItem));
 
         when(youTubeClient.playlistItems()).thenReturn(playlistItems);
-        when(playlistItems.list(List.of(Part.SNIPPET))).thenReturn(playlistItemsList);
+        when(playlistItems.list(List.of(videoService.SNIPPET))).thenReturn(playlistItemsList);
         when(playlistItemsList.setAccessToken(accessToken)).thenReturn(playlistItemsList);
         when(playlistItemsList.setId(videosIds)).thenReturn(playlistItemsList);
         when(playlistItemsList.execute()).thenReturn(playlistItemsListResponse);
@@ -86,7 +85,7 @@ public class VideoServiceTest {
         expectedPlaylistItem.setSnippet(snippet);
 
         when(youTubeClient.playlistItems()).thenReturn(playlistItems);
-        when(playlistItems.insert(List.of(Part.SNIPPET), expectedPlaylistItem)).thenReturn(playlistItemsInsert);
+        when(playlistItems.insert(List.of(videoService.SNIPPET), expectedPlaylistItem)).thenReturn(playlistItemsInsert);
         when(playlistItemsInsert.setAccessToken(accessToken)).thenReturn(playlistItemsInsert);
         when(playlistItemsInsert.execute()).thenReturn(expectedPlaylistItem);
 
@@ -128,8 +127,8 @@ public class VideoServiceTest {
             .setItems(List.of(expectedPlaylistItem, expectedPlaylistItem));
 
         when(youTubeClient.playlistItems()).thenReturn(playlistItems);
-        when(playlistItems.list(List.of(Part.SNIPPET))).thenReturn(playlistItemsList);
-        when(playlistItems.insert(List.of(Part.SNIPPET), expectedPlaylistItem)).thenReturn(playlistItemsInsert);
+        when(playlistItems.list(List.of(videoService.SNIPPET))).thenReturn(playlistItemsList);
+        when(playlistItems.insert(List.of(videoService.SNIPPET), expectedPlaylistItem)).thenReturn(playlistItemsInsert);
         when(playlistItems.delete(any())).thenReturn(playlistItemsDelete);
         when(playlistItemsList.setAccessToken(accessToken)).thenReturn(playlistItemsList);
         when(playlistItemsList.setId(videosIds)).thenReturn(playlistItemsList);

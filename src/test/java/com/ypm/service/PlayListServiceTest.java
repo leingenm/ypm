@@ -2,7 +2,6 @@ package com.ypm.service;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
-import com.ypm.constant.Part;
 import com.ypm.constant.PrivacyStatus;
 import com.ypm.dto.PlaylistDto;
 import org.junit.jupiter.api.Test;
@@ -29,10 +28,10 @@ public class PlayListServiceTest {
     private YouTube youTubeClient;
 
     @Mock
-    private VideoService videoService;
+    private VideoServiceImp videoService;
 
     @InjectMocks
-    private PlayListService playListService;
+    private PlayListServiceImp playListService;
 
     @Test
     void givenCorrectData_whenGetPlayLists_thenPlaylistsFound() throws IOException {
@@ -44,7 +43,7 @@ public class PlayListServiceTest {
             .setItems(List.of(expectedPlaylist));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.list(List.of(Part.SNIPPET))).thenReturn(playlistsList);
+        when(playlists.list(List.of(playListService.SNIPPET))).thenReturn(playlistsList);
         when(playlistsList.setAccessToken(accessToken)).thenReturn(playlistsList);
         when(playlistsList.setMine(true)).thenReturn(playlistsList);
         when(playlistsList.execute()).thenReturn(playlistsListResponse);
@@ -75,15 +74,15 @@ public class PlayListServiceTest {
 
         when(youTubeClient.playlists()).thenReturn(playlists);
         when(youTubeClient.playlistItems()).thenReturn(playlistItems);
-        when(playlists.list(List.of(Part.SNIPPET))).thenReturn(playlistsList);
+        when(playlists.list(List.of(playListService.SNIPPET))).thenReturn(playlistsList);
         when(playlistsList.execute()).thenReturn(playlistsListResponse);
         when(playlists.insert(any(), any())).thenReturn(playlistsInsert);
         when(playlistsInsert.setAccessToken(anyString())).thenReturn(playlistsInsert);
         when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
-        when(playlistItems.list(List.of(Part.SNIPPET))).thenReturn(playlistItemsList);
+        when(playlistItems.list(List.of(playListService.SNIPPET))).thenReturn(playlistItemsList);
         when(playlistItemsList.setAccessToken(accessToken)).thenReturn(playlistItemsList);
         when(playlistItemsList.execute()).thenReturn(playListItemsListResponse);
-        when(playlistItems.insert(eq(List.of(Part.SNIPPET)), any()))
+        when(playlistItems.insert(eq(List.of(playListService.SNIPPET)), any()))
             .thenReturn(playlistItemsInsert);
         when(playlistItemsDelete.setAccessToken(accessToken)).thenReturn(playlistItemsDelete);
         when(playlists.delete(anyString())).thenReturn(playlistDelete);
@@ -91,7 +90,7 @@ public class PlayListServiceTest {
 
         assertNotNull(playlistsInsert, "playlistsInsert mock is null");
 
-        var playlistDto = new PlaylistDto("Merged Playlist", Optional.empty(), PrivacyStatus.PRIVATE);
+        var playlistDto = new PlaylistDto("Merged Playlist", Optional.empty(), PrivacyStatus.PRIVATE.toString());
         Playlist result = playListService.mergePlayLists(accessToken, playlistDto, List.of("playlistId1", "playlistId2"), true);
 
         assertEquals(expectedPlaylist, result);
@@ -104,14 +103,14 @@ public class PlayListServiceTest {
         var playlistsInsert = mock(YouTube.Playlists.Insert.class);
         var expectedPlaylist = new Playlist()
             .setSnippet(new PlaylistSnippet().setTitle("Playlist Title"))
-            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.PRIVATE));
+            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.PRIVATE.toString()));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.insert(List.of(Part.SNIPPET, Part.STATUS), expectedPlaylist)).thenReturn(playlistsInsert);
+        when(playlists.insert(List.of(playListService.SNIPPET, playListService.STATUS), expectedPlaylist)).thenReturn(playlistsInsert);
         when(playlistsInsert.setAccessToken(accessToken)).thenReturn(playlistsInsert);
         when(playlistsInsert.execute()).thenReturn(expectedPlaylist);
 
-        var playlistDto = new PlaylistDto("Playlist Title", Optional.empty(), PrivacyStatus.PRIVATE);
+        var playlistDto = new PlaylistDto("Playlist Title", Optional.empty(), PrivacyStatus.PRIVATE.toString());
         Playlist result = playListService.createPlayList(accessToken, playlistDto);
 
         assertEquals(expectedPlaylist, result);
@@ -129,12 +128,12 @@ public class PlayListServiceTest {
             .setItems(List.of(expectedPlaylist));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.list(List.of(Part.SNIPPET))).thenReturn(playlistsList);
+        when(playlists.list(List.of(playListService.SNIPPET))).thenReturn(playlistsList);
         when(playlistsList.setAccessToken(accessToken)).thenReturn(playlistsList);
         when(playlistsList.setMine(true)).thenReturn(playlistsList);
         when(playlistsList.setId(any())).thenReturn(playlistsList);
         when(playlistsList.execute()).thenReturn(playlistsListResponse);
-        when(playlists.update(List.of(Part.SNIPPET), expectedPlaylist)).thenReturn(playlistUpdate);
+        when(playlists.update(List.of(playListService.SNIPPET), expectedPlaylist)).thenReturn(playlistUpdate);
         when(playlistUpdate.setAccessToken(accessToken)).thenReturn(playlistUpdate);
         when(playlistUpdate.execute()).thenReturn(expectedPlaylist);
 
@@ -153,7 +152,7 @@ public class PlayListServiceTest {
             .setItems(List.of(expectedPlaylist));
 
         when(youTubeClient.playlists()).thenReturn(playlists);
-        when(playlists.list(List.of(Part.SNIPPET))).thenReturn(playlistsList);
+        when(playlists.list(List.of(playListService.SNIPPET))).thenReturn(playlistsList);
         when(playlistsList.setAccessToken(accessToken)).thenReturn(playlistsList);
         when(playlistsList.setMine(true)).thenReturn(playlistsList);
         when(playlistsList.setId(List.of("playlistId"))).thenReturn(playlistsList);

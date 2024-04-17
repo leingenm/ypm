@@ -7,8 +7,8 @@ import com.ypm.dto.PlaylistDto;
 import com.ypm.dto.request.MergePlayListsRequest;
 import com.ypm.dto.response.ExceptionResponse;
 import com.ypm.exception.PlayListNotFoundException;
-import com.ypm.service.PlayListService;
-import com.ypm.service.VideoService;
+import com.ypm.service.PlayListServiceImp;
+import com.ypm.service.VideoServiceImp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,10 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PlayListControllerTest {
 
     @MockBean
-    private PlayListService playListService;
+    private PlayListServiceImp playListService;
 
     @MockBean
-    private VideoService videosService;
+    private VideoServiceImp videosService;
 
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
@@ -100,8 +100,8 @@ class PlayListControllerTest {
         var playlistTitle = "New Playlist Title";
         var playList = new Playlist()
             .setSnippet(new PlaylistSnippet().setTitle(playlistTitle))
-            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.PRIVATE));
-        var playlistDto = new PlaylistDto(playlistTitle, Optional.empty(), PrivacyStatus.PRIVATE);
+            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.PRIVATE.toString()));
+        var playlistDto = new PlaylistDto(playlistTitle, Optional.empty(), PrivacyStatus.PRIVATE.toString());
 
         when(playListService.createPlayList(any(), eq(playlistDto)))
             .thenReturn(playList);
@@ -126,9 +126,9 @@ class PlayListControllerTest {
         var playlistDescription = "Description";
         var playlist = new Playlist()
             .setSnippet(new PlaylistSnippet().setTitle(playlistTitle).setDescription(playlistDescription))
-            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.UNLISTED));
+            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.UNLISTED.toString()));
 
-        var playlistDto = new PlaylistDto(playlistTitle, Optional.of(playlistDescription), PrivacyStatus.UNLISTED);
+        var playlistDto = new PlaylistDto(playlistTitle, Optional.of(playlistDescription), PrivacyStatus.UNLISTED.toString());
 
         when(playListService.createPlayList(any(), eq(playlistDto)))
             .thenReturn(playlist);
@@ -151,7 +151,7 @@ class PlayListControllerTest {
         Playlist playlist = new Playlist();
         playlist.setSnippet(new PlaylistSnippet().setTitle("Merged Playlist Title"));
 
-        var playlistDto = new PlaylistDto("Merged Playlist Title", Optional.of("Description"), PrivacyStatus.PRIVATE);
+        var playlistDto = new PlaylistDto("Merged Playlist Title", Optional.of("Description"), PrivacyStatus.PRIVATE.toString());
         MergePlayListsRequest request =
             new MergePlayListsRequest(playlistDto, List.of("id1", "id2"), true);
 
