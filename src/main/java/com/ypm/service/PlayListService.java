@@ -22,4 +22,6 @@ public interface PlayListService {
 
     Playlist updatePlayListTitle(String accessToken, String playListId,
                                  String newTitle) throws IOException;
+
+    String exportPlaylist(String accessToken, String playlistId) throws IOException;
 }
