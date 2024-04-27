@@ -47,6 +47,7 @@ public class PlayListServiceTest {
         when(playlists.list(List.of(Part.SNIPPET.toString()))).thenReturn(playlistsList);
         when(playlistsList.setAccessToken(accessToken)).thenReturn(playlistsList);
         when(playlistsList.setMine(true)).thenReturn(playlistsList);
+        when(playlistsList.setMaxResults(50L)).thenReturn(playlistsList);
         when(playlistsList.execute()).thenReturn(playlistsListResponse);
 
         List<Playlist> result = playListService.getPlayLists(accessToken);
