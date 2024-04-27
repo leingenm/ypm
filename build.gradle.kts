@@ -38,6 +38,9 @@ dependencies {
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.35.0")
     implementation("com.google.code.gson:gson:2.10.1")
 
+    // Helper libs
+    implementation("org.apache.commons:commons-csv:1.10.0")
+
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
