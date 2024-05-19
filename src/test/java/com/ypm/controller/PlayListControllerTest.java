@@ -1,13 +1,14 @@
 package com.ypm.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.services.youtube.model.Playlist;
-import com.google.api.services.youtube.model.PlaylistItem;
-import com.google.api.services.youtube.model.PlaylistItemSnippet;
-import com.google.api.services.youtube.model.PlaylistSnippet;
+import com.google.api.services.youtube.model.*;
+import com.ypm.constant.PrivacyStatus;
+import com.ypm.dto.PlaylistDto;
 import com.ypm.dto.request.MergePlayListsRequest;
-import com.ypm.service.PlayListService;
-import com.ypm.service.VideoService;
+import com.ypm.dto.response.ExceptionResponse;
+import com.ypm.exception.PlayListNotFoundException;
+import com.ypm.service.PlayListServiceImp;
+import com.ypm.service.VideoServiceImp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,25 +18,30 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class PlayListControllerTest {
 
     @MockBean
-    private PlayListService playListService;
+    private PlayListServiceImp playListService;
 
     @MockBean
-    private VideoService videosService;
+    private VideoServiceImp videosService;
 
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
@@ -91,21 +97,48 @@ class PlayListControllerTest {
         var login = oauth2Login()
             .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
 
-        Playlist playList = new Playlist();
-        playList.setSnippet(new PlaylistSnippet().setTitle("New Playlist Title"));
+        var playlistTitle = "New Playlist Title";
+        var playList = new Playlist()
+            .setSnippet(new PlaylistSnippet().setTitle(playlistTitle))
+            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.PRIVATE.toString()));
+        var playlistDto = new PlaylistDto(playlistTitle, Optional.empty(), PrivacyStatus.PRIVATE.toString());
 
-        when(playListService.createPlayList(any(), eq(playList.getSnippet())))
+        when(playListService.createPlayList(any(), eq(playlistDto)))
             .thenReturn(playList);
 
         mockMvc.perform(post("/playlists")
                 .with(login)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(playList.getSnippet())))
+                .content(objectMapper.writeValueAsString(playlistDto)))
             .andExpect(status().isOk())
             .andExpect(content().json(objectMapper.writeValueAsString(playList)));
 
         verify(playListService, times(1))
-            .createPlayList(any(), eq(playList.getSnippet()));
+            .createPlayList(any(), eq(playlistDto));
+    }
+
+    @Test
+    void givenCorrectRequest_whenCreateUnlistedPlaylist_thenResponseContainsCreatedPlaylist() throws Exception {
+        var login = oauth2Login()
+            .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
+
+        var playlistTitle = "New Unlisted Playlist";
+        var playlistDescription = "Description";
+        var playlist = new Playlist()
+            .setSnippet(new PlaylistSnippet().setTitle(playlistTitle).setDescription(playlistDescription))
+            .setStatus(new PlaylistStatus().setPrivacyStatus(PrivacyStatus.UNLISTED.toString()));
+
+        var playlistDto = new PlaylistDto(playlistTitle, Optional.of(playlistDescription), PrivacyStatus.UNLISTED.toString());
+
+        when(playListService.createPlayList(any(), eq(playlistDto)))
+            .thenReturn(playlist);
+
+        mockMvc.perform(post("/playlists")
+            .with(login)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(playlistDto)))
+        .andExpect(status().isOk())
+        .andExpect(content().json(objectMapper.writeValueAsString(playlist)));
     }
 
     @Test
@@ -118,11 +151,11 @@ class PlayListControllerTest {
         Playlist playlist = new Playlist();
         playlist.setSnippet(new PlaylistSnippet().setTitle("Merged Playlist Title"));
 
+        var playlistDto = new PlaylistDto("Merged Playlist Title", Optional.of("Description"), PrivacyStatus.PRIVATE.toString());
         MergePlayListsRequest request =
-            new MergePlayListsRequest("Merged Playlist Title", List.of("id1", "id2"),
-                true);
+            new MergePlayListsRequest(playlistDto, List.of("id1", "id2"), true);
 
-        when(playListService.mergePlayLists(anyString(), anyString(), anyList(), anyBoolean()))
+        when(playListService.mergePlayLists(anyString(), any(PlaylistDto.class), anyList(), anyBoolean()))
             .thenReturn(playlist);
 
         mockMvc.perform(put("/playlists")
@@ -133,7 +166,7 @@ class PlayListControllerTest {
             .andExpect(content().json(objectMapper.writeValueAsString(playlist)));
 
         verify(playListService, times(1))
-            .mergePlayLists(anyString(), anyString(), anyList(), anyBoolean());
+            .mergePlayLists(anyString(), any(PlaylistDto.class), anyList(), anyBoolean());
     }
 
     @Test
@@ -192,5 +225,58 @@ class PlayListControllerTest {
 
         verify(playListService, times(1))
             .deletePlayList(any(), any());
+    }
+
+    @Test
+    void givenPlayListServiceThrowsPlayListNotFoundException_whenUpdatePlayListTitle_thenThrowsException()
+        throws Exception {
+
+        var login = oauth2Login()
+            .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
+        String expectedErrorMessage =
+            "Playlist with the 'someId' identifier was not found. Playlist not found";
+
+        Playlist playlist = new Playlist();
+        playlist.setSnippet(new PlaylistSnippet().setTitle("New Title"));
+
+        when(playListService.updatePlayListTitle(any(), any(), any()))
+            .thenThrow(new PlayListNotFoundException("someId", "Playlist not found"));
+
+        mockMvc.perform(put("/playlists/{playlistId}", "someId")
+                .with(login)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(playlist)))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.code").value(404))
+            .andExpect(jsonPath("$.message").value(expectedErrorMessage))
+            .andExpect(jsonPath("$.date").isString())
+            .andExpect(result ->
+                assertInstanceOf(PlayListNotFoundException.class, result.getResolvedException()))
+            .andExpect(result -> assertEquals(expectedErrorMessage,
+                Objects.requireNonNull(result.getResolvedException()).getMessage()));
+
+        verify(playListService, times(1))
+            .updatePlayListTitle(any(), any(), any());
+    }
+
+    @Test
+    void givenPlayListServiceThrowsIOException_whenGetPlayLists_thenThrowsIOException()
+        throws Exception {
+
+        var login = oauth2Login()
+            .clientRegistration(this.clientRegistrationRepository.findByRegistrationId("google"));
+
+        ExceptionResponse response = new ExceptionResponse(500, "IO error occurred",
+            Instant.now());
+
+        when(playListService.getPlayLists(any())).thenThrow(new IOException("IO error occurred"));
+
+        mockMvc.perform(get("/playlists").with(login))
+            .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.code").value(response.code()))
+            .andExpect(jsonPath("$.message").value(response.message()))
+            .andExpect(jsonPath("$.date").isString());
+
+        verify(playListService, times(1)).getPlayLists(any());
     }
 }
