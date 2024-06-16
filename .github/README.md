@@ -52,7 +52,9 @@ Check out [How to use HTTP files in IntelliJ IDEA](https://github.com/RomanMager
 
 ### API Endpoints
 
-<a href="https://www.postman.com/ypmanager/workspace/ypm-api"><img alt="Run in Postman" src="https://run.pstmn.io/button.svg"/></a>
+<a href="https://www.postman.com/ypmanager/workspace/ypm-api" target="_blank">
+    <img alt="Run in Postman" src="https://run.pstmn.io/button.svg"/>
+</a>
 
 ### How To Run Tests
 
