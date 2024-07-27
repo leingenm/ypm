@@ -1,7 +1,7 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.2.3"
-    id("io.spring.dependency-management") version "1.1.4"
+    id("org.springframework.boot") version "3.3.2"
+    id("io.spring.dependency-management") version "1.1.5"
 }
 
 group = "com.ypm"
@@ -33,10 +33,10 @@ dependencies {
 
     // YouTube Client
     implementation("com.google.apis:google-api-services-youtube:v3-rev20240310-2.0.0")
-    implementation("com.google.api-client:google-api-client:2.4.0")
+    implementation("com.google.api-client:google-api-client:2.6.0")
     implementation("com.google.http-client:google-http-client:1.44.1")
-    implementation("com.google.oauth-client:google-oauth-client-jetty:1.35.0")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.36.0")
+    implementation("com.google.code.gson:gson:2.10")
 
     // Helper libs
     implementation("org.apache.commons:commons-csv:1.10.0")
