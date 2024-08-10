@@ -1,7 +1,7 @@
 package com.ypm.constant;
 
 public enum Part {
-    SNIPPET, STATUS;
+    SNIPPET, STATUS, CONTENT_DETAILS;
 
     @Override
     public String toString() {
