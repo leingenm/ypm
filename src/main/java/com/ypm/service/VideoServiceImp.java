@@ -3,6 +3,8 @@ package com.ypm.service;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.ypm.constant.Part;
+import com.ypm.dto.VideoDto;
+import com.ypm.service.mapper.VideoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -68,9 +70,20 @@ public class VideoServiceImp implements VideoService {
     }
 
     @Override
-    public List<PlaylistItem> getPlayListVideos(String accessToken,
-                                                String playListId) throws IOException {
+    public List<VideoDto> getVideoData(String accessToken, List<String> videoIds) throws IOException {
+        var items = youTubeClient
+            .videos()
+            .list(List.of(Part.SNIPPET.toString(), Part.CONTENT_DETAILS.toString()))
+            .setId(videoIds)
+            .setAccessToken(accessToken)
+            .execute()
+            .getItems();
 
+        return VideoMapper.mapToVideoDto(items);
+    }
+
+    @Override
+    public List<PlaylistItem> getPlayListVideos(String accessToken, String playListId) throws IOException {
         return youTubeClient
             .playlistItems()
             .list(List.of(Part.SNIPPET.toString()))
