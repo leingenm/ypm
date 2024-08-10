@@ -23,5 +23,5 @@ public interface VideoService {
 
     void deleteVideo(String accessToken, String videoId) throws IOException;
 
-    List<VideoDto> getVideoData(String accessToken, List<String> videoIds) throws IOException;
+    List<VideoDto> getVideoData(List<String> videoIds) throws IOException;
 }

@@ -17,6 +17,7 @@ import java.util.List;
 public class VideoServiceImp implements VideoService {
 
     private final YouTube youTubeClient;
+    private final TokenService tokenService;
 
     @Override
     public List<PlaylistItem> moveVideos(String accessToken,
@@ -70,12 +71,12 @@ public class VideoServiceImp implements VideoService {
     }
 
     @Override
-    public List<VideoDto> getVideoData(String accessToken, List<String> videoIds) throws IOException {
+    public List<VideoDto> getVideoData(List<String> videoIds) throws IOException {
         var items = youTubeClient
             .videos()
             .list(List.of(Part.SNIPPET.toString(), Part.CONTENT_DETAILS.toString()))
             .setId(videoIds)
-            .setAccessToken(accessToken)
+            .setAccessToken(tokenService.getAccessToken())
             .execute()
             .getItems();
 
