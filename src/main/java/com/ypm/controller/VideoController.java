@@ -20,7 +20,7 @@ public class VideoController {
     private final VideoService videosService;
     private final TokenService tokenService;
 
-    @PostMapping("/videoData")
+    @PostMapping("/loadData")
     public ResponseEntity<List<VideoDto>> getVideoData(@RequestBody List<String> videoIds) throws IOException {
         var videoData = videosService.getVideoData(videoIds);
 
