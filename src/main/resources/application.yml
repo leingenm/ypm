@@ -25,6 +25,27 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
 
+  # DAO
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ypm-db
+    name: ypm-db
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    # username: roman
+    # password: secret
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+  docker:
+    compose:
+      enabled: true
+      file: compose.yaml
+
 # Logging
 logging:
   level:
