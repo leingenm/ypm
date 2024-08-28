@@ -85,7 +85,7 @@ public class VideoServiceImp implements VideoService {
                 .videos()
                 .list(List.of(Part.SNIPPET.toString(), Part.CONTENT_DETAILS.toString()))
                 .setId(subList)
-                .setOauthToken(tokenService.getAccessToken());
+                .setOauthToken(tokenService.getToken());
 
             var videoListResponse = itemsSub.execute();
             var videos = videoListResponse.getItems();

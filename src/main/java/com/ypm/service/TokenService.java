@@ -19,7 +19,7 @@ public class TokenService {
         return authClient.getAccessToken().getTokenValue();
     }
 
-    public String getAccessToken() {
+    public String getToken() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var oauthToken = (OAuth2AuthenticationToken) authentication;
         var clientRegistrationId = oauthToken.getAuthorizedClientRegistrationId();
