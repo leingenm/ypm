@@ -31,8 +31,6 @@ spring:
     name: ypm-db
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
-    # username: roman
-    # password: secret
     driver-class-name: org.postgresql.Driver
 
   jpa:
