@@ -6,7 +6,6 @@ public record VideoDto(
     String id,
     String title,
     String description,
-    // String category,
     List<String> tags,
     String channelName) {
 }
