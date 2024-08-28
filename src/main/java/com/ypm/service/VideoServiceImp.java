@@ -72,15 +72,27 @@ public class VideoServiceImp implements VideoService {
 
     @Override
     public List<VideoDto> getVideoData(List<String> videoIds) throws IOException {
-        var items = youTubeClient
-            .videos()
-            .list(List.of(Part.SNIPPET.toString(), Part.CONTENT_DETAILS.toString()))
-            .setId(videoIds)
-            .setAccessToken(tokenService.getAccessToken())
-            .execute()
-            .getItems();
+        final int maxResults = 50;
 
-        return VideoMapper.mapToVideoDto(items);
+        // Remove duplicates from the incoming list with ids
+        videoIds = videoIds.stream().distinct().toList();
+        var videoDtoList = new ArrayList<VideoDto>();
+
+        for (int i = 0; i < videoIds.size(); i += maxResults) {
+            var subList = videoIds.subList(i, Math.min(i + maxResults, videoIds.size()));
+
+            var itemsSub = youTubeClient
+                .videos()
+                .list(List.of(Part.SNIPPET.toString(), Part.CONTENT_DETAILS.toString()))
+                .setId(subList)
+                .setOauthToken(tokenService.getAccessToken());
+
+            var videoListResponse = itemsSub.execute();
+            var videos = videoListResponse.getItems();
+            videoDtoList.addAll(VideoMapper.mapToVideoDto(videos));
+        }
+
+        return videoDtoList;
     }
 
     @Override
