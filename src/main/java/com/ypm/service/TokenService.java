@@ -1,5 +1,6 @@
 package com.ypm.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -9,16 +10,13 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class TokenService {
 
     private final OAuth2AuthorizedClientService authorizedClientService;
 
     private String cachedToken;
     private Instant expiresAt;
-
-    public TokenService(OAuth2AuthorizedClientService authorizedClientService) {
-        this.authorizedClientService = authorizedClientService;
-    }
 
     public String getToken(OAuth2AuthorizedClient authClient) {
         return authClient.getAccessToken().getTokenValue();
