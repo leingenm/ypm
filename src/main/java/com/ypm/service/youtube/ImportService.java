@@ -4,6 +4,7 @@ import com.ypm.persistence.entity.VideoImport;
 import com.ypm.persistence.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ public class ImportService {
 
     private final VideoRepository videoRepository;
 
+    @Transactional
     public List<VideoImport> importCsv(MultipartFile file) throws IOException {
         final List<VideoImport> videos = new ArrayList<>();
 
