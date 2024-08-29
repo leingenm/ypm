@@ -1,4 +1,4 @@
-package com.ypm.service;
+package com.ypm.service.youtube;
 
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.ypm.dto.VideoDto;

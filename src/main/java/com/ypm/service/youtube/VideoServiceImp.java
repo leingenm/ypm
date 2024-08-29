@@ -1,10 +1,11 @@
-package com.ypm.service;
+package com.ypm.service.youtube;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.ypm.constant.Part;
 import com.ypm.dto.VideoDto;
 import com.ypm.dto.mapper.VideoMapper;
+import com.ypm.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

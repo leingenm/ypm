@@ -1,4 +1,4 @@
-package com.ypm.service;
+package com.ypm.service.youtube;
 
 import com.ypm.persistence.entity.VideoImport;
 import com.ypm.persistence.repository.VideoRepository;

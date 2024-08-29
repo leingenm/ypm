@@ -1,7 +1,7 @@
 package com.ypm.controller;
 
 import com.ypm.persistence.entity.VideoImport;
-import com.ypm.service.ImportService;
+import com.ypm.service.youtube.ImportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

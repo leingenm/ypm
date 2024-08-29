@@ -2,7 +2,7 @@ package com.ypm.controller;
 
 import com.ypm.dto.VideoDto;
 import com.ypm.service.TokenService;
-import com.ypm.service.VideoService;
+import com.ypm.service.youtube.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
