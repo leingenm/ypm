@@ -80,6 +80,28 @@ public class VideoServiceImp implements VideoService {
             .getItems();
     }
 
+    // TODO: Update naming & Merge with method above
+    public List<PlaylistItem> getPlaylistVideosPagination(String accessToken, String playlistId) throws IOException {
+        List<PlaylistItem> allItems = new ArrayList<>();
+        String nextPageToken = null;
+
+        do {
+            var request = youTubeClient
+                .playlistItems()
+                .list(List.of(Part.SNIPPET.toString()))
+                .setPlaylistId(playlistId)
+                .setMaxResults(50L)
+                .setPageToken(nextPageToken)
+                .setAccessToken(accessToken)
+                .execute();
+
+            allItems.addAll(request.getItems());
+            nextPageToken = request.getNextPageToken();
+        } while (nextPageToken != null);
+
+        return allItems;
+    }
+
     private boolean isVideoInPlayList(String playListId, PlaylistItem video) {
         return video
             .getSnippet()

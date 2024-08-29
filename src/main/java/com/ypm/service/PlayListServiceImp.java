@@ -9,6 +9,8 @@ import com.ypm.constant.Part;
 import com.ypm.constant.PrivacyStatus;
 import com.ypm.dto.PlaylistDto;
 import com.ypm.exception.PlayListNotFoundException;
+import com.ypm.service.helper.CsvWriter;
+import com.ypm.service.mapper.PlaylistItemMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,7 @@ public class PlayListServiceImp implements PlayListService {
         return youTubeClient
             .playlists()
             .list(List.of(Part.SNIPPET.toString()))
+            .setMaxResults(50L)
             .setAccessToken(accessToken)
             .setMine(true)
             .execute()
@@ -111,5 +114,15 @@ public class PlayListServiceImp implements PlayListService {
             .delete(playListId)
             .setAccessToken(accessToken)
             .execute();
+    }
+
+    @Override
+    public String exportPlaylist(String accessToken, String playlistId) throws IOException {
+        var videosInPlaylist = videoService.getPlaylistVideosPagination(accessToken, playlistId);
+        var videoDtoList = videosInPlaylist.stream().map(PlaylistItemMapper::mapToDto).toList();
+        var filePath = "./playlist_export.csv";
+        CsvWriter.writePlaylistVideosToCsv(videoDtoList, filePath);
+
+        return filePath;
     }
 }

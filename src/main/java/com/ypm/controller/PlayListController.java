@@ -9,6 +9,10 @@ import com.ypm.service.PlayListService;
 import com.ypm.service.TokenService;
 import com.ypm.service.VideoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
@@ -97,5 +101,21 @@ public class PlayListController {
         var accessToken = tokenService.getToken(authClient);
         playListService.deletePlayList(accessToken, playlistId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{playlistId}/export")
+    public ResponseEntity<Resource> exportPlaylistAsCsv(
+        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
+        @PathVariable String playlistId
+    ) throws IOException {
+        var accessToken = tokenService.getToken(authClient);
+        var filePath = playListService.exportPlaylist(accessToken, playlistId);
+        var file = new FileSystemResource(filePath);
+
+        return ResponseEntity
+            .ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+            .contentType(MediaType.parseMediaType("application/csv"))
+            .body(file);
     }
 }
