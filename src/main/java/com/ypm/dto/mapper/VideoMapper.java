@@ -1,4 +1,4 @@
-package com.ypm.service.mapper;
+package com.ypm.dto.mapper;
 
 import com.google.api.services.youtube.model.Video;
 import com.ypm.dto.VideoDto;
