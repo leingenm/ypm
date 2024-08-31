@@ -75,7 +75,7 @@ public class VideoServiceImp implements VideoService {
     public List<VideoDto> getVideoData(List<String> videoIds) throws IOException {
         final int maxResults = 50;
 
-        // Remove duplicates from the incoming list with ids
+        // DEV-NOTE: Remove duplicates from the incoming list with ids
         videoIds = videoIds.stream().distinct().toList();
         var videoDtoList = new ArrayList<VideoDto>();
 

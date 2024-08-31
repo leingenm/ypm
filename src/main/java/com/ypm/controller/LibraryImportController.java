@@ -17,18 +17,14 @@ public class LibraryImportController {
 
     private final ImportService importService;
 
-    @PostMapping("/watchLater")
-    public ResponseEntity<String> importWatchLaterLibrary(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/watch-later")
+    public ResponseEntity<String> importWatchLaterLibrary(@RequestParam("file") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
         List<VideoImport> savedVideos;
-        try {
-            savedVideos = importService.importCsv(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e); // TODO: Update exception handling
-        }
+        savedVideos = importService.importCsv(file);
 
         var responseBody = String.format("Saved %s videos", savedVideos.size());
         return ResponseEntity.ok().body(responseBody);

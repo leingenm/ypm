@@ -21,6 +21,6 @@ public class VideoImport {
 
     public VideoImport(String videoId, String videoTimeStamp) {
         this.videoId = videoId;
-        this.dateAdded = OffsetDateTime.parse(videoTimeStamp); // TODO: Is it okay solution?
+        this.dateAdded = OffsetDateTime.parse(videoTimeStamp);
     }
 }

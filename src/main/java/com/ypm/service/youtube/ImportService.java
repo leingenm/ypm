@@ -23,7 +23,6 @@ public class ImportService {
     public List<VideoImport> importCsv(MultipartFile file) throws IOException {
         final List<VideoImport> videos = new ArrayList<>();
 
-        // Parse CSV
         try (var reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             var header = true;
@@ -42,7 +41,6 @@ public class ImportService {
             }
         }
 
-        // Save into DB
         return videoRepository.saveAll(videos);
     }
 }
