@@ -1,8 +1,11 @@
-package com.ypm.service;
+package com.ypm.service.youtube;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.ypm.constant.Part;
+import com.ypm.dto.VideoDto;
+import com.ypm.dto.mapper.VideoMapper;
+import com.ypm.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ import java.util.List;
 public class VideoServiceImp implements VideoService {
 
     private final YouTube youTubeClient;
+    private final TokenService tokenService;
 
     @Override
     public List<PlaylistItem> moveVideos(String accessToken,
@@ -68,9 +72,32 @@ public class VideoServiceImp implements VideoService {
     }
 
     @Override
-    public List<PlaylistItem> getPlayListVideos(String accessToken,
-                                                String playListId) throws IOException {
+    public List<VideoDto> getVideoData(List<String> videoIds) throws IOException {
+        final int maxResults = 50;
 
+        // DEV-NOTE: Remove duplicates from the incoming list with ids
+        videoIds = videoIds.stream().distinct().toList();
+        var videoDtoList = new ArrayList<VideoDto>();
+
+        for (int i = 0; i < videoIds.size(); i += maxResults) {
+            var subList = videoIds.subList(i, Math.min(i + maxResults, videoIds.size()));
+
+            var itemsSub = youTubeClient
+                .videos()
+                .list(List.of(Part.SNIPPET.toString(), Part.CONTENT_DETAILS.toString()))
+                .setId(subList)
+                .setOauthToken(tokenService.getToken());
+
+            var videoListResponse = itemsSub.execute();
+            var videos = videoListResponse.getItems();
+            videoDtoList.addAll(VideoMapper.mapToVideoDto(videos));
+        }
+
+        return videoDtoList;
+    }
+
+    @Override
+    public List<PlaylistItem> getPlayListVideos(String accessToken, String playListId) throws IOException {
         return youTubeClient
             .playlistItems()
             .list(List.of(Part.SNIPPET.toString()))
