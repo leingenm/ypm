@@ -1,6 +1,7 @@
-package com.ypm.service;
+package com.ypm.service.youtube;
 
 import com.google.api.services.youtube.model.PlaylistItem;
+import com.ypm.dto.VideoDto;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,4 +22,6 @@ public interface VideoService {
     PlaylistItem insertVideo(String accessToken, PlaylistItem playlistItem) throws IOException;
 
     void deleteVideo(String accessToken, String videoId) throws IOException;
+
+    List<VideoDto> getVideoData(List<String> videoIds) throws IOException;
 }

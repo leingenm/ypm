@@ -14,7 +14,7 @@ import java.security.GeneralSecurityException;
 public class YouTubeClientConfiguration {
 
     @Bean
-    public YouTube getYouTubeClient() throws GeneralSecurityException, IOException {
+    public YouTube youTubeClient() throws GeneralSecurityException, IOException {
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
