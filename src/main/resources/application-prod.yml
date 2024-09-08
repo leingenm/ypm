@@ -1,0 +1,7 @@
+server:
+  ssl:
+    key-store: ${SSL_KEY_STORE}
+    key-store-type: ${SSL_STORE_TYPE}
+    key-store-password: ${SSL_STORE_PASSWORD}
+    key-alias: ${SSL_KEY_ALIAS}
+    enabled: true
