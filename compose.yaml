@@ -8,6 +8,8 @@ services:
         ports:
             - '5432:5432'
         volumes:
+            # DEV-NOTE: Used to initialize the DB schema, otherwise Liquibase migrations would fail
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
             - ypm-db:/var/lib/postgresql/data
 
 volumes:
