@@ -1,13 +1,13 @@
 package com.ypm.persistence.repository;
 
-import com.ypm.persistence.entity.Video;
+import com.ypm.persistence.entity.Playlist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface VideoRepository extends JpaRepository<Video, Long> {
+public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
-    Optional<Video> findVideoByYoutubeId(String id);
+    Optional<Playlist> findByName(String playlistName);
 }
