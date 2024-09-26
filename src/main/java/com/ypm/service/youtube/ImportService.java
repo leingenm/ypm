@@ -29,9 +29,16 @@ public class ImportService {
     private final ApplicationEventPublisher publisher;
 
     @Transactional
-    public void importVideos(MultipartFile file) {
+    public void importVideos(String playlistName, MultipartFile file) {
         var parsedVideos = this.parseCsv(file);
-        var videos = this.saveVideosInBatches(parsedVideos);
+        var videos = this.saveVideosInBatches(playlistName, parsedVideos);
+    }
+
+    @Transactional
+    public void importVideos(String playlistName, List<String> videosIds) {
+        var videoImportDtos =
+            videosIds.stream().map(videoId -> new VideoImportDto(videoId, OffsetDateTime.now())).toList();
+        var videos = this.saveVideosInBatches(playlistName, videoImportDtos);
     }
 
     public List<VideoImportDto> parseCsv(MultipartFile file) {
@@ -61,14 +68,14 @@ public class ImportService {
     }
 
     @Transactional
-    public List<Video> saveVideosInBatches(List<VideoImportDto> videoImportDtos) {
+    public List<Video> saveVideosInBatches(String playlistName, List<VideoImportDto> videoImportDtos) {
         // DEV-NOTE: It's set to 50 as it's the maximum number of ids that YouTube API accepts
         final int batchSize = 50;
         final int size = videoImportDtos.size();
 
         final List<Video> videos = new ArrayList<>();
 
-        final var watchLaterPlaylist = playlistRepository.findByName("Watch Later").orElseThrow();
+        final var watchLaterPlaylist = playlistRepository.findByNameContainingIgnoreCase(playlistName).orElseThrow();
 
         for (int i = 0; i < size; i += batchSize) {
             var videosBatch = videoImportDtos
