@@ -10,7 +10,13 @@ max_line_length = 100
 
 [*.java]
 ij_java_align_multiline_chained_methods = true
+ij_java_align_multiline_parameters = true
+ij_java_align_multiline_parameters_in_calls = true
+ij_java_align_multiline_throws_list = true
 ij_java_align_multiline_extends_list = true
+ij_java_align_multiline_ternary_operation = true
+ij_java_align_multiline_records = true
+ij_java_record_components_wrap = on_every_item
 
 [*.yml]
 indent_size = 2
