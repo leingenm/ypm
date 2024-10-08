@@ -1,4 +1,4 @@
-package com.ypm.config.security;
+package com.ypm.config.spring;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
