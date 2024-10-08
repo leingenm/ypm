@@ -23,6 +23,8 @@ ij_java_keep_builder_methods_indents = true
 ij_java_align_subsequent_simple_methods = true
 ij_java_keep_simple_methods_in_one_line = true
 ij_java_method_call_chain_wrap = normal
+ij_java_call_parameters_wrap = normal
+ij_java_method_parameters_wrap = normal
 
 [*.yml]
 indent_size = 2
