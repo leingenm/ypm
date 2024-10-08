@@ -1,5 +1,7 @@
 package com.ypm.controller;
 
+import com.ypm.constant.ProcessingStatus;
+import com.ypm.dto.BatchProcessingStatus;
 import com.ypm.service.youtube.ImportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,27 +18,40 @@ public class LibraryImportController {
     private final ImportService importService;
 
     @PostMapping("/file")
-    public ResponseEntity<String> importVideos(@RequestParam("playlist-name") String playlistName,
-                                               @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> importVideos(@RequestParam("playlist-name") String playlistName,
+                                          @RequestParam("file") MultipartFile file) {
         var validationResponse =
             validateRequest(playlistName, file == null || file.isEmpty(), "File has no data or was not provided.");
         if (validationResponse != null) return validationResponse;
 
-        importService.importVideos(playlistName, file);
+        var processingIds = importService.importVideos(playlistName, file);
 
-        return ResponseEntity.accepted().body("Videos are being processed. Please check back later.");
+        return ResponseEntity.accepted().body(processingIds);
     }
 
     @PostMapping
-    public ResponseEntity<String> importVideos(@RequestParam("playlist-name") String playlistName,
-                                               @RequestBody List<String> videosIds) {
+    public ResponseEntity<?> importVideos(@RequestParam("playlist-name") String playlistName,
+                                          @RequestBody List<String> videosIds) {
         var validationResponse =
             validateRequest(playlistName, videosIds.isEmpty(), "Videos IDs were not provided");
         if (validationResponse != null) return validationResponse;
 
-        importService.importVideos(playlistName, videosIds);
+        var processingId = importService.importVideos(playlistName, videosIds);
 
-        return ResponseEntity.accepted().body("Videos are being processed.");
+        return ResponseEntity.accepted().body(processingId);
+    }
+
+    @GetMapping("/status/{processing-id}")
+    public ResponseEntity<BatchProcessingStatus> checkStatus(@PathVariable("processing-id") String processingId) {
+        var processingStatus = importService.checkProcessingStatus(processingId);
+
+        if (processingStatus.getStatus() == ProcessingStatus.COMPLETED) {
+            return ResponseEntity.ok(processingStatus);
+        } else if (processingStatus.getStatus() == ProcessingStatus.FAILED) {
+            return ResponseEntity.internalServerError().body(processingStatus);
+        } else {
+            return ResponseEntity.accepted().body(processingStatus);
+        }
     }
 
     private static ResponseEntity<String> validateRequest(String playlistName, boolean isNullOrEmpty, String errorMessage) {

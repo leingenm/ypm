@@ -1,14 +1,16 @@
 package com.ypm.service.youtube.event;
 
+import com.ypm.constant.ProcessingStatus;
 import com.ypm.persistence.entity.VideoData;
 import com.ypm.persistence.event.VideosSavedEvent;
 import com.ypm.persistence.repository.VideoRepository;
+import com.ypm.service.BatchStatusManager;
 import com.ypm.service.youtube.VideoService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.io.IOException;
+import java.util.Objects;
 
 import static org.springframework.transaction.event.TransactionPhase.BEFORE_COMMIT;
 
@@ -20,33 +22,33 @@ public class VideoEventListener {
     private final VideoRepository videoRepository;
 
     @TransactionalEventListener(phase = BEFORE_COMMIT)
-    public void handleVideosSavedEvent(VideosSavedEvent videosSavedEvent) throws IOException {
-        var videoDtoList = videoService.getVideoData(videosSavedEvent.getVideoIds());
+    public void handleVideosSavedEvent(VideosSavedEvent event) {
+        try {
+            var videoDtoList = videoService.getVideoData(event.getVideoIds());
 
-        videoDtoList.forEach(videoDto -> {
-            if (videoDto.title().isEmpty() || videoDto.description().isEmpty()) return;
+            var videosToSave = videoDtoList.stream()
+                                           .filter(dto -> !dto.title().isEmpty() && !dto.description().isEmpty())
+                                           .map(dto -> videoRepository.findVideoByYoutubeId(dto.id()).map(video -> {
+                                               String tagsAsString = "";
+                                               if (dto.tags() != null) {
+                                                   tagsAsString = String.join(", ", dto.tags());
+                                               }
 
-            var optionalVideo = videoRepository.findVideoByYoutubeId(videoDto.id());
+                                               var videoData = new VideoData(dto.title(), dto.description(), dto.channelName(), tagsAsString);
+                                               video.setVideoData(videoData);
 
-            optionalVideo.ifPresent(video -> {
-                String tagsAsString = "";
-                if (videoDto.tags() != null) {
-                    tagsAsString = String.join(", ", videoDto.tags());
-                }
+                                               if (video.getVideoData() != null) {
+                                                   video.getVideoData().setVideo(video);
+                                               }
 
-                var videoData = new VideoData(
-                    videoDto.title(),
-                    videoDto.description(),
-                    videoDto.channelName(), tagsAsString);
+                                               return video;
+                                           }).orElse(null)).filter(Objects::nonNull).toList();
 
-                video.setVideoData(videoData);
-
-                if (video.getVideoData() != null) {
-                    video.getVideoData().setVideo(video);
-                }
-
-                videoRepository.save(video);
-            });
-        });
+            videoRepository.saveAll(videosToSave);
+            BatchStatusManager.updateBatchStatus(event.processingId(), ProcessingStatus.COMPLETED);
+        } catch (Exception e) {
+            BatchStatusManager.updateBatchStatus(event.processingId(), ProcessingStatus.FAILED, event.getVideoIds(), e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 }
