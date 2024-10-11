@@ -46,7 +46,7 @@ public class VideoEventListener {
 
     private Video addOrUpdateVideoData(VideoDto dto, Video video) {
         if (video.getVideoData() == null) {
-            var videoData = new VideoData(dto.title(), dto.description(), dto.channelName(), tagsToString(dto));
+            var videoData = new VideoData(dto.title(), dto.description(), dto.channelName(), this.getTags(dto));
             video.setVideoData(videoData);
             video.getVideoData().setVideo(video);
         } else if (hasVideoDataChanged(video.getVideoData(), dto)) {
@@ -64,14 +64,18 @@ public class VideoEventListener {
         return !Objects.equals(videoData.getTitle(), dto.title())
                 || !Objects.equals(videoData.getDescription(), dto.description())
                 || !Objects.equals(videoData.getChannelName(), dto.channelName())
-                || !Objects.equals(videoData.getTags(), dto.tags() != null ? tagsToString(dto) : null);
+                || !Objects.equals(videoData.getTags(), this.getTags(dto));
     }
 
     private void updateVideoData(VideoData videoData, VideoDto videoDto) {
         videoData.setTitle(videoDto.title());
         videoData.setDescription(videoDto.description());
         videoData.setChannelName(videoDto.channelName());
-        videoData.setTags(videoDto.tags() != null ? tagsToString(videoDto) : null);
+        videoData.setTags(this.getTags(videoDto));
+    }
+
+    private String getTags(VideoDto dto) {
+        return dto.tags() != null ? tagsToString(dto) : null;
     }
 
     private String tagsToString(VideoDto videoDto) {
