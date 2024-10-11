@@ -2,7 +2,9 @@ package com.ypm.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import java.time.Instant;
 public class TokenService {
 
     private final OAuth2AuthorizedClientService authorizedClientService;
+    private final OAuth2AuthorizedClientManager authorizedClientManager;
 
     private String cachedToken;
     private Instant expiresAt;
@@ -38,8 +41,19 @@ public class TokenService {
         var principalName = oauthToken.getPrincipal().getName();
         var client = authorizedClientService.loadAuthorizedClient(clientRegistrationId, principalName);
 
-        var accessToken = client.getAccessToken();
-        cachedToken = accessToken.getTokenValue();
-        expiresAt = accessToken.getExpiresAt();
+        if (client == null) {
+            var authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId(clientRegistrationId)
+                                                         .principal(oauthToken.getPrincipal().getName())
+                                                         .build();
+            client = authorizedClientManager.authorize(authorizeRequest);
+        }
+
+        if (client != null) {
+            var accessToken = client.getAccessToken();
+            cachedToken = accessToken.getTokenValue();
+            expiresAt = accessToken.getExpiresAt();
+        } else {
+            throw new RuntimeException("Problem with OAuth client or token. Maybe unable to refresh token");
+        }
     }
 }
