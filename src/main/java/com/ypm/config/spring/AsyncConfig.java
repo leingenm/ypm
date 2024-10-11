@@ -23,6 +23,19 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setMaxPoolSize(corePoolSize * 2);
         executor.setQueueCapacity(500);
         executor.setThreadNamePrefix("AsyncThread-");
+
+        // executor.setTaskDecorator(runnable -> {
+        //     SecurityContext context = SecurityContextHolder.getContext();
+        //     return () -> {
+        //         try {
+        //             SecurityContextHolder.setContext(context);
+        //             runnable.run();
+        //         } finally {
+        //             SecurityContextHolder.clearContext();
+        //         }
+        //     };
+        // });
+
         executor.initialize();
 
         // Wrapping with DelegatingSecurityContextExecutor to propagate security context

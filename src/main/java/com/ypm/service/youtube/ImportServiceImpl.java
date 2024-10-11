@@ -13,6 +13,7 @@ import com.ypm.service.BatchStatusManager;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -80,8 +82,9 @@ public class ImportServiceImpl implements ImportService {
         return processingIds;
     }
 
+    @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected void processBatch(String processingId, Playlist playlist, List<VideoImportDto> videoImportDtoSubList) {
+    protected CompletableFuture<Void> processBatch(String processingId, Playlist playlist, List<VideoImportDto> videoImportDtoSubList) {
         try {
             BatchStatusManager.updateBatchStatus(processingId, ProcessingStatus.PROCESSING);
 
@@ -98,8 +101,10 @@ public class ImportServiceImpl implements ImportService {
         } catch (RuntimeException e) {
             var failedVideoIds = videoImportDtoSubList.stream().map(VideoImportDto::id).toList();
             BatchStatusManager.updateBatchStatus(processingId, ProcessingStatus.FAILED, failedVideoIds);
-            throw new RuntimeException(e);
+            throw e;
         }
+
+        return CompletableFuture.completedFuture(null);
     }
 
     private List<VideoImportDto> parseCsv(MultipartFile file) {
