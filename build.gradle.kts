@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.3.4"
+    id("org.springframework.boot") version "3.3.5"
     id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -42,11 +42,11 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // YouTube Client
-    implementation("com.google.apis:google-api-services-youtube:v3-rev20240310-2.0.0")
-    implementation("com.google.api-client:google-api-client:2.6.0")
-    implementation("com.google.http-client:google-http-client:1.44.1")
+    implementation("com.google.apis:google-api-services-youtube:v3-rev20241022-2.0.0")
+    implementation("com.google.api-client:google-api-client:2.7.0")
+    implementation("com.google.http-client:google-http-client:1.45.0")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.36.0")
-    implementation("com.google.code.gson:gson:2.10")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     // Lombok
     compileOnly("org.projectlombok:lombok")
@@ -55,6 +55,7 @@ dependencies {
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    runtimeOnly("com.h2database:h2")
 }
 
 tasks.withType<Test> {
