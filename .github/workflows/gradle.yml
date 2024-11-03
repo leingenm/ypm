@@ -52,4 +52,6 @@ jobs:
           createPR: false
 
       - name: Build with Gradle Wrapper
+        env:
+          SPRING_PROFILES_ACTIVE: test
         run: ./gradlew build
