@@ -1,6 +1,6 @@
 services:
     postgres-db:
-        image: 'postgres:latest'
+        image: 'postgres:12.8'
         environment:
             - POSTGRES_DB=ypm-db
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -8,8 +8,6 @@ services:
         ports:
             - '5432:5432'
         volumes:
-            # DEV-NOTE: Used to initialize the DB schema, otherwise Liquibase migrations would fail
-            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
             - ypm-db:/var/lib/postgresql/data
 
 volumes:
