@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "playlists", schema = "ypm")
+@Table(name = "playlists")
 public class Playlist {
 
     @Id
