@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "videos", schema = "ypm")
+@Table(name = "videos")
 public class Video {
 
     @Id
