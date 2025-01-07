@@ -1,9 +1,5 @@
 spring:
 
-  # Secrets
-  config:
-    import: classpath:application.secrets.yml
-
   # Spring
   application:
     name: ypm
@@ -13,8 +9,8 @@ spring:
         registration:
           google:
             client-name: Google
-            client-id: ${google.application.client-id}
-            client-secret: ${google.application.client-secret}
+            client-id: ${CONSOLE_CLIENT_ID}
+            client-secret: ${CONSOLE_CLIENT_SECRET}
             scope: profile, email, https://www.googleapis.com/auth/youtube
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/google
@@ -27,16 +23,15 @@ spring:
 
   # DAO
   datasource:
-    url: jdbc:postgresql://localhost:5432/ypm-db
+    url: jdbc:postgresql://localhost:5432/ypm-db?currentSchema=public
     name: ypm-db
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-    enabled: true
-    default-schema: ypm
+    change-log: classpath:db/changelog/changelog-root.yaml
+    enabled: false
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect

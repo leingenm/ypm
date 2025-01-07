@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "video_data", schema = "ypm")
+@Table(name = "video_data")
 public class VideoData {
 
     @Id
