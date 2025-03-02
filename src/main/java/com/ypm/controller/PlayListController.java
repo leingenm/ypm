@@ -5,13 +5,11 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 import com.ypm.dto.PlaylistDto;
 import com.ypm.dto.request.MergePlayListsRequest;
+import com.ypm.service.AuthService;
 import com.ypm.service.youtube.PlayListService;
-import com.ypm.service.TokenService;
 import com.ypm.service.youtube.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -24,78 +22,55 @@ public class PlayListController {
 
     private final PlayListService playListService;
     private final VideoService videosService;
-    private final TokenService tokenService;
+    private final AuthService authService;
 
     @GetMapping
-    public ResponseEntity<List<Playlist>> getPlayLists(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient
-    ) throws IOException {
-        var accessToken = tokenService.getToken(authClient);
-        return ResponseEntity.ok(playListService.getPlayLists(accessToken));
+    public ResponseEntity<List<Playlist>> getPlayLists() throws IOException {
+        return ResponseEntity.ok(playListService.getPlayLists(authService.getToken()));
     }
 
     @GetMapping("/{playlistId}")
-    public ResponseEntity<List<PlaylistItem>> getPlayListVideos(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @PathVariable String playlistId
-    ) throws IOException {
-        var accessToken = tokenService.getToken(authClient);
-        var playlistVideos = videosService.getPlayListVideos(accessToken, playlistId);
+    public ResponseEntity<List<PlaylistItem>> getPlayListVideos(@PathVariable String playlistId) throws IOException {
+        var playlistVideos = videosService.getPlayListVideos(authService.getToken(), playlistId);
         return ResponseEntity.ok(playlistVideos);
     }
 
     @PostMapping
-    public ResponseEntity<Playlist> createPlaylist(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @RequestBody PlaylistDto playlistDto
-    ) throws IOException {
-        var accessToken = tokenService.getToken(authClient);
-        var createdPlayList = playListService.createPlayList(accessToken, playlistDto);
+    public ResponseEntity<Playlist> createPlaylist(@RequestBody PlaylistDto playlistDto) throws IOException {
+        var createdPlayList = playListService.createPlayList(authService.getToken(), playlistDto);
         return ResponseEntity.ok(createdPlayList);
     }
 
-    @PutMapping()
-    public ResponseEntity<Playlist> mergePlayLists(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @RequestBody MergePlayListsRequest request
-    ) throws IOException {
-        var accessToken = tokenService.getToken(authClient);
-        var mergedPlaylist = playListService.mergePlayLists(accessToken, request.playlistDto(),
-            request.playListsIds(), request.deleteAfterMerge());
+    @PutMapping
+    public ResponseEntity<Playlist> mergePlayLists(@RequestBody MergePlayListsRequest request) throws IOException {
+        var mergedPlaylist = playListService.mergePlayLists(authService.getToken(), request.playlistDto(),
+                                                            request.playListsIds(), request.deleteAfterMerge());
         return ResponseEntity.ok(mergedPlaylist);
     }
 
     @PutMapping("/{playlistId}")
     public ResponseEntity<Playlist> updatePlayListTitle(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @PathVariable String playlistId,
-        @RequestBody PlaylistSnippet dataWithUpdatedTitle
+            @PathVariable String playlistId,
+            @RequestBody PlaylistSnippet dataWithUpdatedTitle
     ) throws IOException {
-        var accessToken = tokenService.getToken(authClient);
         var newTitle = dataWithUpdatedTitle.getTitle();
-        var updatedPlaylist = playListService.updatePlayListTitle(accessToken, playlistId, newTitle);
+        var updatedPlaylist = playListService.updatePlayListTitle(authService.getToken(), playlistId, newTitle);
         return ResponseEntity.ok(updatedPlaylist);
     }
 
     @PutMapping("/{playlistId}/{targetPlaylistId}")
     public ResponseEntity<List<PlaylistItem>> moveVideos(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @PathVariable String playlistId,
-        @PathVariable String targetPlaylistId,
-        @RequestBody List<String> videosIds
+            @PathVariable String playlistId,
+            @PathVariable String targetPlaylistId,
+            @RequestBody List<String> videosIds
     ) throws IOException {
-        var accessToken = tokenService.getToken(authClient);
-        var movedVideos = videosService.moveVideos(accessToken, playlistId, targetPlaylistId, videosIds);
+        var movedVideos = videosService.moveVideos(authService.getToken(), playlistId, targetPlaylistId, videosIds);
         return ResponseEntity.ok(movedVideos);
     }
 
     @DeleteMapping("/{playlistId}")
-    public ResponseEntity<Void> deletePlayList(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @PathVariable String playlistId
-    ) throws IOException {
-        var accessToken = tokenService.getToken(authClient);
-        playListService.deletePlayList(accessToken, playlistId);
+    public ResponseEntity<Void> deletePlayList(@PathVariable String playlistId) throws IOException {
+        playListService.deletePlayList(authService.getToken(), playlistId);
         return ResponseEntity.noContent().build();
     }
 }

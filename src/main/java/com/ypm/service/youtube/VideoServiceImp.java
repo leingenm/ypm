@@ -5,7 +5,7 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.ypm.constant.Part;
 import com.ypm.dto.VideoDto;
 import com.ypm.dto.mapper.VideoMapper;
-import com.ypm.service.TokenService;
+import com.ypm.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class VideoServiceImp implements VideoService {
 
     private final YouTube youTubeClient;
-    private final TokenService tokenService;
+    private final AuthService authService;
 
     @Override
     public List<PlaylistItem> moveVideos(String accessToken,
@@ -86,7 +86,7 @@ public class VideoServiceImp implements VideoService {
                 .videos()
                 .list(List.of(Part.SNIPPET.toString(), Part.CONTENT_DETAILS.toString()))
                 .setId(subList)
-                .setOauthToken(tokenService.getToken());
+                .setOauthToken(authService.getToken());
 
             var videoListResponse = itemsSub.execute();
             var videos = videoListResponse.getItems();
