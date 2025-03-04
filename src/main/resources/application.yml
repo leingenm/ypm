@@ -3,23 +3,6 @@ spring:
   # Spring
   application:
     name: ypm
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-name: Google
-            client-id: ${CONSOLE_CLIENT_ID}
-            client-secret: ${CONSOLE_CLIENT_SECRET}
-            scope: profile, email, https://www.googleapis.com/auth/youtube
-            authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
-        provider:
-          google:
-            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-            token-uri: https://www.googleapis.com/oauth2/v4/token
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-            jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
 
   # DAO
   datasource:

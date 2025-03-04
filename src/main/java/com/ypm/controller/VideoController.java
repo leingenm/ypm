@@ -1,12 +1,10 @@
 package com.ypm.controller;
 
 import com.ypm.dto.VideoDto;
-import com.ypm.service.TokenService;
+import com.ypm.service.AuthService;
 import com.ypm.service.youtube.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -18,7 +16,7 @@ import java.util.List;
 public class VideoController {
 
     private final VideoService videosService;
-    private final TokenService tokenService;
+    private final AuthService authService;
 
     @PostMapping("/load")
     public ResponseEntity<List<VideoDto>> getVideoData(@RequestBody List<String> videoIds) throws IOException {
@@ -29,11 +27,9 @@ public class VideoController {
 
     @DeleteMapping("/{videoId}")
     public ResponseEntity<Void> deleteVideos(
-        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authClient,
-        @PathVariable String videoId
+            @PathVariable String videoId
     ) throws IOException {
-        var accessToken = tokenService.getToken(authClient);
-        videosService.deleteVideo(accessToken, videoId);
+        videosService.deleteVideo(authService.getToken(), videoId);
         return ResponseEntity.noContent().build();
     }
 }
