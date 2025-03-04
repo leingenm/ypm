@@ -4,7 +4,7 @@ title: "[Feature Request]: "
 labels: ["enhancement"]
 assignees:
   - daverbk
-  - RomanMager
+  - leingenm
 body:
   - type: markdown
     attributes:
@@ -42,7 +42,7 @@ body:
     id: terms
     attributes:
       label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/RomanMager/ypm/blob/main/.github/CODE_OF_CONDUCT.md)
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/leingenm/ypm/blob/main/.github/CODE_OF_CONDUCT.md)
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
