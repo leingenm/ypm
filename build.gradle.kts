@@ -4,7 +4,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
 }
 
-group = "com.ypm"
+group = "xyz.ypmngr"
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -24,37 +24,34 @@ repositories {
 }
 
 dependencies {
+
     // Spring Boot
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-web")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-security")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-oauth2-resource-server")
 
     // Data Access
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.liquibase:liquibase-core")
-    runtimeOnly("org.postgresql:postgresql")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-data-jpa")
+    implementation(group = "org.liquibase", name = "liquibase-core")
+    runtimeOnly(group = "org.postgresql", name= "postgresql")
 
-    // Dev
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    // Development
+    developmentOnly(group = "org.springframework.boot", name = "spring-boot-devtools")
+    developmentOnly(group = "org.springframework.boot", name = "spring-boot-docker-compose")
+    annotationProcessor(group = "org.springframework.boot", name = "spring-boot-configuration-processor")
 
     // YouTube Client
-    implementation("com.google.apis:google-api-services-youtube:v3-rev20241022-2.0.0")
-    implementation("com.google.api-client:google-api-client:2.7.0")
-    implementation("com.google.http-client:google-http-client:1.45.0")
-    implementation("com.google.oauth-client:google-oauth-client-jetty:1.36.0")
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation(group = "com.google.apis", name = "google-api-services-youtube", version = "v3-rev20241022-2.0.0")
+    implementation(group = "com.google.api-client", name = "google-api-client", version = "2.7.0")
+    implementation(group = "com.google.http-client", name = "google-http-client", version = "1.45.0")
+    implementation(group = "com.google.code.gson", name = "gson", version = "2.11.0")
 
     // Lombok
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+    compileOnly(group = "org.projectlombok", name = "lombok")
+    annotationProcessor(group = "org.projectlombok", name = "lombok")
 
     // Test
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-test")
 }
 
 tasks.withType<Test> {
