@@ -4,28 +4,15 @@ spring:
   application:
     name: ypm
 
-  # DAO
-  datasource:
-    url: jdbc:postgresql://localhost:5432/ypm-db?currentSchema=public
-    name: ypm-db
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
-  liquibase:
-    change-log: classpath:db/changelog/changelog-root.yaml
-    enabled: false
-
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
-
-  docker:
-    compose:
-      enabled: true
-      file: compose.yaml
-
 # Logging
 logging:
   level:
-    org.springframework.security: trace
+    root: info
+
+# Swagger
+springdoc:
+  swagger-ui:
+    urls:
+      - name: general
+        url: /oas/ypm.yaml
+
