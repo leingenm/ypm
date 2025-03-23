@@ -19,6 +19,6 @@ public class PlaylistMapper {
                 .channelTitle(ytPlaylist.getSnippet().getChannelTitle())
                 .publishedAt(publishedAt.toLocalDate())
                 .tags(ytPlaylist.getSnippet().getTags())
-                .status(PrivacyStatus.fromValue(ytPlaylist.getStatus().getPrivacyStatus().toUpperCase()));
+                .privacyStatus(PrivacyStatus.fromValue(ytPlaylist.getStatus().getPrivacyStatus().toUpperCase()));
     }
 }

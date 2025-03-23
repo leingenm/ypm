@@ -28,16 +28,16 @@ public class YouTubeImportService implements ImportService {
         if (!Objects.requireNonNull(file.getContentType()).contains("csv")) throw new BadRequestException("Endpoint allows csv files only.");
         var parsedVideos = this.parseCsv(file);
         var playlistTitle = String.format("YPM Playlist import from %s on %s UTC", file.getOriginalFilename(), Instant.now());
-        var createdPlaylist = playlistService.createPlaylist(new Playlist().title(playlistTitle).status(PrivacyStatus.PRIVATE));
+        var createdPlaylist = playlistService.createPlaylist(new Playlist().title(playlistTitle).privacyStatus(PrivacyStatus.PRIVATE));
         parsedVideos.forEach(videoGlobalId -> playlistService.insertVideoIntoPlaylist(videoGlobalId, createdPlaylist.getId()));
         return playlistService.getPlaylistById(createdPlaylist.getId());
     }
 
     private List<String> parseCsv(MultipartFile file) {
         var videosGlobalIds = new ArrayList<String>();
-        try {
+        try (var inputReader = new InputStreamReader(file.getInputStream())) {
             var format = CSVFormat.Builder.create(CSVFormat.DEFAULT).setHeader().get();
-            var records = format.parse(new InputStreamReader(file.getInputStream()));
+            var records = format.parse(inputReader);
             records.stream().iterator().forEachRemaining(record -> videosGlobalIds.add(record.get("Video ID")));
         } catch (IOException e) {
             throw new BadRequestException("Error parsing attached csv. Check if it's formatted according to RFC4180.", e);

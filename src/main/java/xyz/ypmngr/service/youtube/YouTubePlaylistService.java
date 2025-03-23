@@ -77,10 +77,9 @@ public class YouTubePlaylistService implements PlaylistService {
 
     @Override
     public Playlist createPlaylist(Playlist playlist) {
-        log.info("Attempting to create playlist: {}", playlist);
         var ytPlaylist = new com.google.api.services.youtube.model.Playlist();
         ytPlaylist
-                .setStatus(new PlaylistStatus().setPrivacyStatus(requireNonNull(playlist.getStatus()).getValue()))
+                .setStatus(new PlaylistStatus().setPrivacyStatus(requireNonNull(playlist.getPrivacyStatus()).getValue()))
                 .setSnippet(new PlaylistSnippet().setTitle(playlist.getTitle()).setDescription(playlist.getDescription()));
         try {
             var createdYtPlaylist = youTubeClient

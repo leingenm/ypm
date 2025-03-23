@@ -421,7 +421,7 @@ components:
           description: |
             Keyword tags associated with the playlist. Mapped from Google's `Playlist.Snippet.tags`.
           example: null
-        status:
+        privacyStatus:
           $ref: "#/components/schemas/PrivacyStatus"
 
     Video:
