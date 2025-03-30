@@ -13,6 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
+
 @Component
 public class GoogleAuthenticationMediationFilter extends OncePerRequestFilter {
 
@@ -22,20 +24,18 @@ public class GoogleAuthenticationMediationFilter extends OncePerRequestFilter {
             @Nullable HttpServletResponse response,
             @Nullable FilterChain filterChain
     ) throws ServletException, IOException {
-
         if (filterChain == null || request == null) {
-            throw new IllegalArgumentException("Unexpected nullable params");
+            throw new IllegalArgumentException("Filter used outside filter chain");
         }
-
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            throw new InvalidBearerTokenException("Invalid bearer token passed");
-        }
-
-        String token = header.substring(7);
-        BearerTokenAuthenticationToken auth = new BearerTokenAuthenticationToken(token);
-        auth.setAuthenticated(true);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        filterChain.doFilter(request, response);
+        var header = request.getHeader(AUTHORIZATION);
+        if (header == null) {
+            filterChain.doFilter(request, response);
+        } else if (header.startsWith("Bearer")) {
+            var token = header.substring(7);
+            var auth = new BearerTokenAuthenticationToken(token);
+            auth.setAuthenticated(true);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            filterChain.doFilter(request, response);
+        } else throw new InvalidBearerTokenException("Invalid bearer token passed");
     }
 }

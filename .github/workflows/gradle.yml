@@ -8,11 +8,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -25,7 +21,4 @@ jobs:
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
 
       - name: Build with Gradle Wrapper
-        env:
-          CONSOLE_CLIENT_ID: secret
-          CONSOLE_CLIENT_SECRET: secret
         run: ./gradlew build

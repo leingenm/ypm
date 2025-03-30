@@ -19,11 +19,14 @@ public class SecurityConfiguration {
             OncePerRequestFilter googleAuthenticationMediationFilter,
             HttpSecurity http
     ) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-            .addFilterBefore(googleAuthenticationMediationFilter, BasicAuthenticationFilter.class);
-
-        return http.build();
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oas/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(googleAuthenticationMediationFilter, BasicAuthenticationFilter.class)
+                .build();
     }
 }

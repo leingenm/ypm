@@ -6,7 +6,7 @@ COPY ./src ./src
 RUN gradle build --no-daemon -x test
 
 FROM openjdk:17-jdk-slim
-MAINTAINER daverbk, RomanMager
+MAINTAINER daverbk, leingenm
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
