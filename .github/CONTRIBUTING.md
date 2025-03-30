@@ -24,7 +24,7 @@ To get started contributing, please follow these steps:
 4. Ensure your changes adhere to the project's coding standards and guidelines
 5. Commit your changes with descriptive commit messages
 6. Push your changes to your fork
-7. Open a pull request (PR) from your fork's branch to the `main` branch of the main repository `RomanMager/ypm`
+7. Open a pull request (PR) from your fork's branch to the `main` branch of the main repository `leingenm/ypm`
 8. Provide a descriptive title and detailed description for your PR
 9. Wait for feedback and address any requested changes or comments (it will surely be reviewed!)
 10. Once approved, your changes will be merged into the `main` branch
@@ -57,7 +57,7 @@ If you would like to work on an existing issue, please follow these steps:
 4. Make your changes and create a pull request following the steps outlined above
 
 # Code Style
-Please ensure that your code adheres to the project's [coding standards and guidelines](https://github.com/RomanMager/ypm/blob/main/.editorconfig). 
+Please ensure that your code adheres to the project's [coding standards and guidelines](https://github.com/leingenm/ypm/blob/main/.editorconfig). 
 If you are unsure about anything, feel free to ask for clarification
 
 # Questions

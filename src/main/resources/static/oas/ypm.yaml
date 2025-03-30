@@ -1,0 +1,555 @@
+openapi: 3.0.1
+info:
+  title: YPM API
+  description: Methods to merge, move items between, and delete playlists
+  version: 1.0.0
+
+tags:
+  - name: Playlist
+    description: CRUD for YouTube playlists and their contents
+  - name: Import
+    description: Data import
+
+paths:
+  /playlists:
+    get:
+      tags:
+        - Playlist
+      summary: Get all user's playlists
+      operationId: getAllUserPlaylists
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: List of playlists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Playlist"
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Received an error from Google API while executing the request
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error
+
+    post:
+      tags:
+        - Playlist
+      summary: Create a new playlist
+      operationId: createPlaylist
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Playlist"
+      responses:
+        200:
+          description: Playlist created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Playlist"
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Received an error from Google API while executing the request
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error
+
+  /playlists/{playlistId}:
+    get:
+      tags:
+        - Playlist
+      summary: Get single playlist data by id
+      operationId: getPlaylistById
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      parameters:
+        - name: playlistId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Playlist's title has been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Playlist"
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Received an error from Google API while executing the request
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error
+
+    patch:
+      tags:
+        - Playlist
+      summary: Update playlist title
+      operationId: updatePlaylistTitle
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      parameters:
+        - name: playlistId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: the id of the playlist which title u want to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Playlist"
+      responses:
+        200:
+          description: Playlist's title has been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Playlist"
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Received an error from Google API while executing the request
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error
+
+    delete:
+      tags:
+        - Playlist
+      summary: Delete a playlist by id
+      operationId: deletePlaylist
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      parameters:
+        - name: playlistId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Playlist has been deleted or was not present
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Received an error from Google API while executing the request
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error
+
+  /playlists/merge:
+    post:
+      tags:
+        - Playlist
+      summary: Merge multiple playlists together
+      operationId: mergePlaylists
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MergePlaylistsRequest"
+      responses:
+        200:
+          description: |
+            Playlists have been merged successfully.
+            The resulting playlist that those mentioned in `playlistsIds` were merged into is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Playlist"
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Received an error from Google API while executing the request
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error
+
+  /playlists/videos/move:
+    post:
+      tags:
+        - Playlist
+      summary: Move videos from one playlist to another
+      operationId: moveVideosBetweenPlaylists
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoveVideosRequest"
+      responses:
+        200:
+          description: Videos have been moved. The playlist containing moved videos is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Playlist"
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Received an error from Google API while executing the request
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error
+
+  /playlists/videos/{videoId}:
+    delete:
+      tags:
+        - Playlist
+      summary: Delete a video from playlist by id
+      operationId: removeVideoFromPlaylist
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      parameters:
+        - name: videoId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Playlist video's `playlistItemId`
+      responses:
+        204:
+          description: Video has been deleted or was not present.
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Received an error from Google API while executing the request
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error.
+
+  /import:
+    post:
+      tags:
+        - Import
+      summary: Import out-of-reach playlist from a Google Takeout csv
+      operationId: importFromCsv
+      requestBody:
+        required: true
+        description: CSV file to import
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Up to `10MB`
+      security:
+        - oauth2Auth:
+            - https://www.googleapis.com/auth/youtube
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: Playlist has been imported. The imported playlist is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Playlist"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        403:
+          description: Login issues, check ur authorization
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unexpected server error
+
+components:
+  schemas:
+    Playlist:
+      type: object
+      description: A wrapper over Google's `Playlist`
+      properties:
+        id:
+          type: string
+          nullable: true
+          description: |
+            The playlist id. Mapped from Google's `Playlist.id`.
+          example: PL1L91OFQYDncEj9NzclmtHefL8zTQgRkU
+        title:
+          type: string
+          nullable: true
+          description: |
+            The playlist's title. Mapped from Google's `Playlist.Snippet.title`.
+          example: Some new playlist
+        description:
+          type: string
+          nullable: true
+          description: |
+            The playlist's description. Mapped from Google's `Playlist.Snippet.description`.
+          example: Playlists description
+        videos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Video"
+          nullable: true
+          description: Videos that the playlist contains.
+          example:
+            - title: Vim As Your Editor - Introduction
+              globalId: X6AR2RMB5tE
+              playlistItemId: UEwxTDkxT0ZRWURuY3owRlZjekh5SE1BamFSZnpPUnU0SC41NkI0NEY2RDEwNTU3Q0M2
+              playlistId: PL1L91OFQYDncz0FVczHyHMAjaRfzORu4H
+              ownerChannelId: UC8ENHE5xdFSwx71u3fDH5Xw
+              ownerChannelTitle: ThePrimeagen
+        channelId:
+          type: string
+          nullable: true
+          description: |
+            The ID that YouTube uses to uniquely identify the channel that published the playlist.
+            Mapped from Google's `Playlist.Snippet.channelId`.
+          example: UCjHHN4fs2rUdMOByoSzHdRw
+        channelTitle:
+          type: string
+          nullable: true
+          description: |
+            The channel title of the channel that the video belongs to.
+            Mapped from Google's `Playlist.Snippet.channelTitle`.
+          example: David Rabko
+        publishedAt:
+          type: string
+          format: date
+          nullable: true
+          description: |
+            The date and time that the playlist was created.
+            Mapped from Google's `Playlist.Snippet.publishedAt`.
+          example: 2024-10-19
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: |
+            Keyword tags associated with the playlist. Mapped from Google's `Playlist.Snippet.tags`.
+          example: null
+        privacyStatus:
+          $ref: "#/components/schemas/PrivacyStatus"
+
+    Video:
+      type: object
+      description: A wrapper for Google's `PlaylistItem` and `Video`
+      properties:
+        title:
+          type: string
+          nullable: true
+          description: Playlist video title. Mapped from Google's `PlaylistItem.Snippet.title`.
+          example: Vim As Your Editor - Introduction
+        globalId:
+          type: string
+          nullable: true
+          description: |
+            Playlist video global YouTube id.
+            Mapped from Google's `PlaylistItem.ContentDetails.videoId`.
+          example: X6AR2RMB5tE
+        playlistItemId:
+          type: string
+          nullable: true
+          description: Playlist video id. Mapped from Google's `PlaylistItem.id`.
+          example: UEwxTDkxT0ZRWURuY3owRlZjekh5SE1BamFSZnpPUnU0SC41NkI0NEY2RDEwNTU3Q0M2
+        playlistId:
+          type: string
+          nullable: true
+          description: |
+            Playlist if of the playlist video.
+            Mapped from Google's `PlaylistItem.Snippet.playlistId`.
+          example: PL1L91OFQYDncz0FVczHyHMAjaRfzORu4H
+        ownerChannelId:
+          type: string
+          nullable: true
+          description: |
+            Owner id of the playlist video.
+            Mapped from Google's `PlaylistItem.Snippet.videoOwnerChannelId`.
+          example: UC8ENHE5xdFSwx71u3fDH5Xw
+        ownerChannelTitle:
+          type: string
+          nullable: true
+          description: |
+            Owner title of the playlist video.
+            Mapped from Google's `PlaylistItem.Snippet.videoOwnerChannelTitle`.
+          example: ThePrimeagen
+
+    MergePlaylistsRequest:
+      type: object
+      description: Data for merging playlists into one.
+      properties:
+        resultingPlaylist:
+          $ref: "#/components/schemas/Playlist"
+        playlistsIds:
+          type: array
+          items:
+            type: string
+          description: List of playlists to be merged.
+          example:
+            - PL1L91OFQYDnfPE8jzM8hC6fhx_gl_bDeT
+            - PL1L91OFQYDncz0FVczHyHMAjaRfzORu4H
+            - PL1L91OFQYDne2DaCQ5PG6RqtAbhv-QULI
+        deleteAfterMerge:
+          type: boolean
+          nullable: false
+          default: false
+          description: If merged playlists must be deleted after merge.
+
+    MoveVideosRequest:
+      type: object
+      description: Data for moving videos between playlists.
+      properties:
+        fromPlaylistId:
+          type: string
+          description: Playlist to move videos from
+          example: PL1L91OFQYDncz0FVczHyHMAjaRfzORu4H
+        targetPlaylistId:
+          type: string
+          description: Playlist to move videos to
+          example: PL1L91OFQYDnfPE8jzM8hC6fhx_gl_bDeT
+        videosIds:
+          type: array
+          items:
+            type: string
+          description: Playlists videos' to move `playlistItemId`
+          example:
+            - UEwxTDkxT0ZRWURuY3owRlZjekh5SE1BamFSZnpPUnU0SC41NkI0NEY2RDEwNTU3Q0M2
+            - UEwxTDkxT0ZRWURuY3owRlZjekh5SE1BamFSZnpPUnU0SC4yODlGNEE0NkRGMEEzMEQy
+        deleteAfterMove:
+          type: boolean
+          nullable: false
+          default: false
+          description: If moved videos must be deleted from the `from` playlist.
+
+    PrivacyStatus:
+      type: string
+      nullable: true
+      description: |
+        The playlist's privacy status. Mapped from Google's `Playlist.Status.privacyStatus`.
+      enum:
+        - PRIVATE
+        - PUBLIC
+        - UNLISTED
+
+    ErrorResponse:
+      type: object
+      description: Object returned when server error occurs.
+      properties:
+        code:
+          type: string
+          description: A message describing the reason of an error.
+          example: Google API returned error
+        message:
+          type: string
+          description: Error message taken from the exception thrown.
+          example: Invalid value at 'resource.status.podcast_status'
+
+  securitySchemes:
+    oauth2Auth:
+      type: oauth2
+      description: OAuth2 authentication using Authorization Code flow with Google.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+          tokenUrl: https://www.googleapis.com/oauth2/v4/token
+          scopes:
+            https://www.googleapis.com/auth/youtube: Read and update YouTube entities
+
+    bearerAuth:
+      type: http
+      description: In case you already have a token u can this.
+      scheme: bearer
+      bearerFormat: JWT
