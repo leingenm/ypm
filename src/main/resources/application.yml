@@ -1,5 +1,4 @@
 spring:
-
   # Spring
   application:
     name: ypm
@@ -15,4 +14,3 @@ springdoc:
     urls:
       - name: general
         url: /oas/ypm.yaml
-
