@@ -16,17 +16,18 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-            OncePerRequestFilter googleAuthenticationMediationFilter,
-            HttpSecurity http
+        OncePerRequestFilter googleAuthenticationMediationFilter,
+        HttpSecurity http
     ) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oas/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(googleAuthenticationMediationFilter, BasicAuthenticationFilter.class)
-                .build();
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(
+                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oas/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(googleAuthenticationMediationFilter, BasicAuthenticationFilter.class)
+            .build();
     }
 }

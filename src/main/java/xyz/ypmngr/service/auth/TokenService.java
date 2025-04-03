@@ -17,7 +17,7 @@ public class TokenService implements AuthService {
             return bearer.getToken();
         } else {
             throw new InvalidBearerTokenException(
-                    "Invalid authentication stored in context: " + auth.getClass().getSimpleName()
+                "Invalid authentication stored in context: " + auth.getClass().getSimpleName()
             );
         }
     }

@@ -1,5 +1,6 @@
 package xyz.ypmngr.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,8 +9,6 @@ import xyz.ypmngr.model.MergePlaylistsRequest;
 import xyz.ypmngr.model.MoveVideosRequest;
 import xyz.ypmngr.model.Playlist;
 import xyz.ypmngr.service.PlaylistService;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,21 +53,22 @@ public class PlaylistController implements PlaylistsApi {
     @Override
     public ResponseEntity<Playlist> mergePlaylists(MergePlaylistsRequest mergePlaylistsRequest) {
         var mergedPlaylist = playlistService
-                .mergePlaylists(
-                        mergePlaylistsRequest.getResultingPlaylist(),
-                        mergePlaylistsRequest.getPlaylistsIds(),
-                        mergePlaylistsRequest.getDeleteAfterMerge()
-                );
+            .mergePlaylists(
+                mergePlaylistsRequest.getResultingPlaylist(),
+                mergePlaylistsRequest.getPlaylistsIds(),
+                mergePlaylistsRequest.getDeleteAfterMerge()
+            );
         return ResponseEntity.ok(mergedPlaylist);
     }
 
     @Override
-    public ResponseEntity<Playlist> moveVideosBetweenPlaylists(MoveVideosRequest moveVideosRequest) {
+    public ResponseEntity<Playlist> moveVideosBetweenPlaylists(
+        MoveVideosRequest moveVideosRequest) {
         var playlistContainingMovedVideos = playlistService.moveVideosBetweenPlaylists(
-                moveVideosRequest.getFromPlaylistId(),
-                moveVideosRequest.getTargetPlaylistId(),
-                moveVideosRequest.getVideosIds(),
-                moveVideosRequest.getDeleteAfterMove()
+            moveVideosRequest.getFromPlaylistId(),
+            moveVideosRequest.getTargetPlaylistId(),
+            moveVideosRequest.getVideosIds(),
+            moveVideosRequest.getDeleteAfterMove()
         );
         return ResponseEntity.ok(playlistContainingMovedVideos);
     }
