@@ -1,5 +1,11 @@
 package xyz.ypmngr.service.youtube;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.springframework.stereotype.Service;
@@ -10,13 +16,6 @@ import xyz.ypmngr.model.PrivacyStatus;
 import xyz.ypmngr.service.ImportService;
 import xyz.ypmngr.service.PlaylistService;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 @Service
 @RequiredArgsConstructor
 public class YouTubeImportService implements ImportService {
@@ -25,11 +24,24 @@ public class YouTubeImportService implements ImportService {
 
     @Override
     public Playlist importFromCsv(MultipartFile file) {
-        if (!Objects.requireNonNull(file.getContentType()).contains("csv")) throw new BadRequestException("Endpoint allows csv files only.");
+        if (!Objects.requireNonNull(file.getContentType()).contains("csv")) {
+            throw new BadRequestException("Endpoint allows csv files only.");
+        }
         var parsedVideos = this.parseCsv(file);
-        var playlistTitle = String.format("YPM Playlist import from %s on %s UTC", file.getOriginalFilename(), Instant.now());
-        var createdPlaylist = playlistService.createPlaylist(new Playlist().title(playlistTitle).privacyStatus(PrivacyStatus.PRIVATE));
-        parsedVideos.forEach(videoGlobalId -> playlistService.insertVideoIntoPlaylist(videoGlobalId, createdPlaylist.getId()));
+        var playlistTitle = String.format(
+            "YPM Playlist import from %s on %s UTC",
+            file.getOriginalFilename(),
+            Instant.now()
+        );
+        var createdPlaylist = playlistService.createPlaylist(
+            new Playlist().title(playlistTitle).privacyStatus(PrivacyStatus.PRIVATE)
+        );
+        parsedVideos.forEach(
+            videoGlobalId -> playlistService.insertVideoIntoPlaylist(
+                videoGlobalId,
+                createdPlaylist.getId()
+            )
+        );
         return playlistService.getPlaylistById(createdPlaylist.getId());
     }
 
@@ -38,9 +50,17 @@ public class YouTubeImportService implements ImportService {
         try (var inputReader = new InputStreamReader(file.getInputStream())) {
             var format = CSVFormat.Builder.create(CSVFormat.DEFAULT).setHeader().get();
             var records = format.parse(inputReader);
-            records.stream().iterator().forEachRemaining(record -> videosGlobalIds.add(record.get("Video ID")));
+            records
+                .stream()
+                .iterator()
+                .forEachRemaining(
+                    record -> videosGlobalIds.add(
+                        record.get("Video ID")
+                    )
+                );
         } catch (IOException e) {
-            throw new BadRequestException("Error parsing attached csv. Check if it's formatted according to RFC4180.", e);
+            throw new BadRequestException(
+                "Error parsing attached csv. Check if it's formatted according to RFC4180.", e);
         }
         return videosGlobalIds;
     }

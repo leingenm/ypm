@@ -1,9 +1,12 @@
 package xyz.ypmngr.config.spring.security;
 
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
@@ -11,18 +14,14 @@ import org.springframework.security.oauth2.server.resource.authentication.Bearer
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
-import static org.apache.http.HttpHeaders.AUTHORIZATION;
-
 @Component
 public class GoogleAuthenticationMediationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            @Nullable HttpServletRequest request,
-            @Nullable HttpServletResponse response,
-            @Nullable FilterChain filterChain
+        @Nullable HttpServletRequest request,
+        @Nullable HttpServletResponse response,
+        @Nullable FilterChain filterChain
     ) throws ServletException, IOException {
         if (filterChain == null || request == null) {
             throw new IllegalArgumentException("Filter used outside filter chain");
@@ -36,6 +35,8 @@ public class GoogleAuthenticationMediationFilter extends OncePerRequestFilter {
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
             filterChain.doFilter(request, response);
-        } else throw new InvalidBearerTokenException("Invalid bearer token passed");
+        } else {
+            throw new InvalidBearerTokenException("Invalid bearer token passed");
+        }
     }
 }
