@@ -1,17 +1,19 @@
-FROM gradle:8-jdk17-jammy AS build
+FROM gradle:8.8-jdk17 AS builder
 WORKDIR /app
-COPY settings.gradle.kts ./
-COPY build.gradle.kts ./
-COPY ./src ./src
-RUN gradle build --no-daemon -x test
+COPY . .
+RUN gradle clean build -x test
 
-FROM openjdk:17-jdk-slim
-MAINTAINER daverbk, leingenm
-WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+FROM amazoncorretto:17-alpine AS extractor
+WORKDIR /extracted
+COPY --from=builder /app/build/libs/*.jar app.jar
+RUN java -Djarmode=layertools -jar app.jar extract
 
-RUN useradd -m ypm-user
-USER ypm-user
+FROM amazoncorretto:17-alpine
+WORKDIR application
+COPY --from=extractor /extracted/dependencies/ ./
+COPY --from=extractor /extracted/spring-boot-loader/ ./
+COPY --from=extractor /extracted/snapshot-dependencies/ ./
+COPY --from=extractor /extracted/application/ ./
 
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "java -jar /app/app.jar"]
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
