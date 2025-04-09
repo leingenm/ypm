@@ -1,65 +1,74 @@
 # YouTube Playlists Management API
 
+<!-- TOC -->
+
+* [YouTube Playlists Management API](#youtube-playlists-management-api)
+    * [Description](#description)
+    * [Main Features](#main-features)
+        * [Merge, delete, move videos between playlists](#merge-delete-move-videos-between-playlists)
+    * [Getting Started Locally](#getting-started-locally)
+    * [Usage](#usage)
+        * [Authorization](#authorization)
+    * [Contributing](#contributing)
+    * [License](#license)
+    * [Contact](#contact)
+
+<!-- TOC -->
+
 ## Description
 
 The YouTube Playlists Management API is a tool designed to help us manage our YouTube
 playlists more efficiently. It allows to perform bulk edits on playlists via rest
 calls.
 
-## Main Feature
+## Main Features
 
-**Bulk Edits**: Easily perform bulk edits on your playlists.
+Merge, delete, move videos between playlists. We provide rest api for all of that. The problem that
+we tried to solve originally was - organize videos from `Watch Later` to different playlists.
+Unfortunately YT API doesn't provide access to the `Watch Later` playlist, so we have csv import
+functionality. `Watch Later` contents can be exported via Google Takeout and then imported as a
+manageable playlist to YPM.
 
 ## Getting Started Locally
 
-### Prerequisites
-
-- Java 17
-- Docker Daemon
-
-### Starting up
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/leingenm/ypm.git
-```
-
-2. Build the project
-
-```bash
-./gradlew build
-```
-
-3. Set up env variables
-
-`DB_NAME` - DB name, can be started from compose.yaml
-
-`POSTGRES_PASSWORD` - DB password
-
-`POSTGRES_USERNAME` - DB username
-
-4. Run the project
-
-```bash
-./gradlew bootRun
-```
+We recommend pulling an image in case u want to start locally. Pull and start
+`ghcr.io/leingenm/ypm:main`. The app is going to be available at `localhost:8080`.
 
 ## Usage
 
-Set up ur own auth 2.0 auth app
-in [Google Console](https://support.google.com/googleapi/answer/6158849?hl=en#zippy=), don't
-forget ot add `localhost:8080` or `ypmngr.xyz` to redirect uris and ur email as a test user.
+### Authorization
 
-Obtain ur token via our swagger specifying ur `client_id` and `client_secret` or via postman and use
-bearer token auth.
+We require setting up ur own auth 2.0 app
+in [Google Console](https://support.google.com/googleapi/answer/6158849?hl=en#zippy=).
 
-`Auth URL` - `https://accounts.google.com/o/oauth2/v2/auth`
+1. Create a project and finish the basic configuration
+2. Enable
+   [
+   `YouTube Data API v3`](https://console.cloud.google.com/apis/library/youtube.googleapis.com?invt=AbuI9A&project=amiable-raceway-456118-j4)
+   for your project
+3. Go to the `Data access` and add `https://www.googleapis.com/auth/youtube` > `Save`
+4. Go to the `Audience` > Add your Google account to `Test users`
+5. Go to `Credentials` > Click `Create credentials` > `OAuth client ID`
+6. Select `Web application` in the `Application type` dropdown
+7. We recommend adding the following to `Authorised JavaScript origins`
 
-`Access Token URL` - `https://www.googleapis.com/oauth2/v4/token`
+* `http://localhost`
+* `https://ypmngr.xyz`
 
-`Scope` must include `https://www.googleapis.com/auth/youtube`, double check if the scope is present
-in ur google console app Data access tab
+8. We recommend adding the following to `Authorised redirect URIs`
+
+* `http://localhost:8080/swagger-ui/oauth2-redirect.html`
+* `https://ypmngr.xyz/swagger-ui/oauth2-redirect.html`
+* `https://oauth.pstmn.io/v1/callback`
+
+Use ur OAuth 2.0 Client `client_id` and `client_secret` in our swagger (don't forget to
+select the scope checkbox). First token exchange will require quite a few authorization screen
+clicks which is connected with authorizing ur Google Console app to ur YT account data.
+
+<div align="center">
+    <img src="readme-assets/google-console.png" width="800" height="400" alt="Google console screenshot"/>
+    <img src="readme-assets/swagger-ui-auth.png" width="800" height="400" alt="Swagger UI screenshot"/>
+</div>
 
 ## Contributing
 
