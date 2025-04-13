@@ -1,10 +1,9 @@
-name: Java CI with Gradle
+name: Check
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   analyze:
@@ -18,7 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'java-kotlin' ]
+        language:
+          - java-kotlin
 
     steps:
       - name: Checkout repository
@@ -27,8 +27,8 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'adopt'
+          java-version: 17
+          distribution: alpine
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -53,8 +53,8 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: 17
+          distribution: alpine
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5

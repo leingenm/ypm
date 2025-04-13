@@ -1,6 +1,9 @@
-name: Deploy
+name: Publish
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
@@ -58,19 +61,22 @@ jobs:
 
     steps:
       - name: Pull latest image
-        run: docker pull ghcr.io/ypmngr/ypm:main
+        run: docker pull ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-58
 
       - name: Stop and remove existing container
         run: |
-          docker stop ypm || true
-          docker rm ypm || true
+          docker stop ${{ env.IMAGE_NAME }} || true
+          docker rm ${{ env.IMAGE_NAME }} || true
 
       - name: Run new container
         run: |
-          docker run -d --name ypm --network nginx-network ghcr.io/ypmngr/ypm:main
+          docker run -d --name ${{ env.IMAGE_NAME }} --network nginx-network \
+          ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-58
 
       - name: Update Nginx config with container IP and reload
         run: |
-          CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' my-app)
-          sed -i "s|proxy_pass .*;|proxy_pass http://$CONTAINER_IP:${{ secrets.APP_PORT }};|" ${{ secrets.NGINX_CONFIG_FILE }}
+          CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}} \
+          {{end}}' ${{ env.IMAGE_NAME }})
+          sed -i "s|proxy_pass .*;|proxy_pass http://$CONTAINER_IP:${{ secrets.APP_PORT }};|" \ 
+          ${{ secrets.NGINX_CONFIG_FILE }}
           nginx -s reload
