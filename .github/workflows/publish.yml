@@ -81,5 +81,5 @@ jobs:
       - name: Update Nginx config with container IP and reload
         run: |
           CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $SHORT_REPO_NAME)
-          sed -i "s|proxy_pass .*;|proxy_pass http://$CONTAINER_IP:${{ secrets.APP_PORT }};|" ${{ secrets.NGINX_CONFIG_FILE }}
-          nginx -s reload
+          sudo sed -i "s|proxy_pass .*;|proxy_pass http://$CONTAINER_IP:${{ secrets.APP_PORT }};|" ${{ secrets.NGINX_CONFIG_FILE }}
+          sudo nginx -s reload
