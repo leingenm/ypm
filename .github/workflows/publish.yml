@@ -61,7 +61,7 @@ jobs:
 
     steps:
       - name: Extract short repo name
-        run: SHORT_REPO_NAME=$(echo '${{ github.repository }}' | awk -F'/' '{print $2')
+        run: SHORT_REPO_NAME=$(echo '${{ github.repository }}' | awk -F'/' '{print $2}')
 
       - name: Pull latest image
         run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-58
