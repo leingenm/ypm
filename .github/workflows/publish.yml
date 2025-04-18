@@ -1,0 +1,90 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+    workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+  deploy:
+    runs-on: self-hosted
+    needs: build-and-push-image
+
+    steps:
+      - name: Extract short repo name
+        run: |
+          SHORT_REPO_NAME=$(echo '${{ github.repository }}' | awk -F'/' '{print $2}')
+          echo "SHORT_REPO_NAME=$SHORT_REPO_NAME" >> $GITHUB_ENV
+
+      - name: Pull latest image
+        run: |
+          IMAGE_TAG=${{ github.ref_name }}
+          docker pull "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$IMAGE_TAG"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Stop and remove existing container
+        run: |
+          docker stop $SHORT_REPO_NAME || true
+          docker rm $SHORT_REPO_NAME || true
+
+      - name: Run new container
+        run: |
+          docker run -d --name "$SHORT_REPO_NAME" --network nginx-network \
+          "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$IMAGE_TAG"
+
+      - name: Update Nginx config with container IP and reload
+        run: |
+          CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $SHORT_REPO_NAME)
+          sudo sed -i "s|proxy_pass .*;|proxy_pass http://$CONTAINER_IP:${{ secrets.APP_PORT }};|" ${{ secrets.NGINX_CONFIG_FILE }}
+          sudo nginx -s reload
+
+      - name: Clean up unused Docker images
+        run: |
+          docker image prune -af
+          docker container prune -f

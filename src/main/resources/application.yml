@@ -3,6 +3,10 @@ spring:
   application:
     name: ypm
 
+# Reverse proxy headers
+server:
+  forward-headers-strategy: native
+
 # Logging
 logging:
   level:

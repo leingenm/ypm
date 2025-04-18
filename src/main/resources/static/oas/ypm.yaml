@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: YPM API
   description: Methods to merge, move items between, and delete playlists
-  version: 1.0.0
+  version: 1.0.1
 
 tags:
   - name: Playlist
@@ -550,6 +550,6 @@ components:
 
     bearerAuth:
       type: http
-      description: In case you already have a token u can this.
+      description: In case you already have a token u can throw it in here.
       scheme: bearer
       bearerFormat: JWT
